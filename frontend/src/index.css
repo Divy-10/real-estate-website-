@@ -1,0 +1,73 @@
+:root {
+  --bg-sky: #e0f2fe; /* Elegant soft sky-blue */
+  --text-dark: #0f172a; /* Slate black */
+  --text-muted: #64748b; /* Slate gray */
+  --accent-gold: #d4af37; /* Luxury gold */
+  --btn-dark: #000000; /* Solid black */
+  --font-main: 'Outfit', sans-serif;
+  --transition: all 0.3s ease;
+  --shadow-sm: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+  --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.05), 0 4px 6px -4px rgb(0 0 0 / 0.05);
+  --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.05), 0 8px 10px -6px rgb(0 0 0 / 0.05);
+  --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.08);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-main);
+  background-color: #ffffff;
+  color: var(--text-dark);
+  overflow-x: hidden;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+  transition: var(--transition);
+}
+
+.text-dark-custom {
+  color: var(--text-dark);
+}
+
+.text-muted-custom {
+  color: var(--text-muted);
+}
+
+/* Custom button classes to override Bootstrap defaults */
+.btn-luxury-dark {
+  background-color: var(--btn-dark);
+  color: #ffffff !important;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 6px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  transition: var(--transition);
+}
+
+.btn-luxury-dark:hover {
+  background-color: #1e293b;
+  transform: translateY(-2px);
+}
+
+.btn-luxury-outline {
+  background-color: transparent;
+  color: var(--text-dark) !important;
+  border: 1.5px solid var(--text-dark);
+  padding: 10px 24px;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: var(--transition);
+}
+
+.btn-luxury-outline:hover {
+  background-color: var(--text-dark);
+  color: #ffffff !important;
+  transform: translateY(-2px);
+}

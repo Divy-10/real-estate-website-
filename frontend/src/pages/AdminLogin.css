@@ -1,0 +1,83 @@
+/* Background */
+.admin-login-wrapper {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    padding: 20px;
+}
+
+/* Login Box */
+.admin-login-box {
+    width: 100%;
+    max-width: 420px;
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 35px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Title */
+.admin-login-box h2 {
+    text-align: center;
+    font-size: 26px;
+    font-weight: 700;
+    margin-bottom: 25px;
+    color: #0f172a;
+}
+
+/* Inputs */
+.admin-login-box .form-control {
+    height: 48px;
+    border-radius: 10px;
+    border: 1px solid #e5e7eb;
+    padding: 10px 14px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+}
+
+.admin-login-box .form-control:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    outline: none;
+}
+
+/* Button */
+.admin-login-box button {
+    height: 48px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 16px;
+    background: #2563eb;
+    border: none;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+.admin-login-box button:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+}
+
+/* Small text (optional) */
+.admin-login-box .hint {
+    text-align: center;
+    margin-top: 15px;
+    font-size: 13px;
+    color: #64748b;
+}
+
+/* Animation */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
