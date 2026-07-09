@@ -90,7 +90,7 @@ function Home() {
                         <h2
                             className="fw-bold m-0"
                             style={{
-                                fontSize: "36px",
+                                fontSize: "clamp(24px, 5vw, 36px)",
                                 letterSpacing: "-1px"
                             }}
                         >

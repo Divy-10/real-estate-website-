@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import API from "../services/api";
+import { getBackendUrl } from "../utils/config";
 
 function EditProperty() {
     const { id } = useParams();
@@ -188,7 +189,7 @@ function EditProperty() {
                         <label className="form-label">Current Property Image</label>
 
                         <img
-                            src={`http://localhost:5009${formData.image}`}
+                            src={getBackendUrl(formData.image)}
                             alt="Property"
                             className="img-fluid rounded mb-3"
                             style={{

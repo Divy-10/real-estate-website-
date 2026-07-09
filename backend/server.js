@@ -11,6 +11,8 @@ const propertyRoutes = require("./routes/propertyRoutes");
 const inquiryRoutes = require("./routes/inquiryRoutes");
 const authRoutes = require("./routes/authRoutes");
 const chatRoutes = require("./routes/chatRoutes");
+const userAuthRoutes = require("./routes/userAuthRoutes");
+const userRoutes = require("./routes/userRoutes");
 
 const app = express();
 
@@ -27,6 +29,9 @@ app.use("/api/properties", propertyRoutes);
 app.use("/api/inquiries", inquiryRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/users", userRoutes);
+
+
 
 app.get("/", (req, res) => {
     res.send("backend are now connected succesfully")

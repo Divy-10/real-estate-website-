@@ -4,15 +4,25 @@ const protect = (req, res, next) => {
     const token = req.headers.authorization?.split(" ")[1];
 
     if (!token) {
-        return res.status(401).json({ message: "No token, access denied" });
+        return res.status(401).json({
+            message: "No token, access denied",
+        });
     }
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || "secretkey");
-        req.admin = decoded;
+        const decoded = jwt.verify(
+            token,
+            process.env.JWT_SECRET || "secretkey"
+        );
+
+        // Store decoded user info
+        req.user = decoded;
+
         next();
     } catch (error) {
-        res.status(401).json({ message: "Invalid token" });
+        return res.status(401).json({
+            message: "Invalid token",
+        });
     }
 };
 

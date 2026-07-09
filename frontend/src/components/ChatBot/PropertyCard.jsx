@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { getBackendUrl } from "../../utils/config";
 
 const PropertyCard = ({ property }) => {
     const formattedPrice = typeof property.price === "number"
@@ -6,7 +7,7 @@ const PropertyCard = ({ property }) => {
         : property.price;
 
     const imageUrl = property.image
-        ? `http://localhost:5009${property.image}`
+        ? getBackendUrl(property.image)
         : "https://via.placeholder.com/300";
 
     return (

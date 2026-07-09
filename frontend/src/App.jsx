@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom"
+import { Routes, Route } from "react-router-dom";
 
 import Home from "./pages/Home";
 import Properties from "./pages/Properties";
@@ -14,95 +14,122 @@ import AdminLayout from "./layout/AdminLayout";
 import AdminLogin from "./pages/AdminLogin";
 import ProtectedRoute from "./components/ProtectedRoute";
 import ChatBot from "./components/ChatBot/ChatBot";
+import Signup from "./pages/Signup";
+import Login from "./pages/Login";
+import Profile from "./pages/Profile";
+import Favorites from "./pages/Favorites";
 
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home />} />
+    <Routes>
 
-        <Route path="/properties" element={<Properties />} />
+      <Route path="/" element={<Home />} />
 
-        <Route path="/property/:id" element={<PropertyDetails />} />
+      <Route path="/properties" element={<Properties />} />
 
-        <Route path="/about" element={<About />} />
+      <Route path="/property/:id" element={<PropertyDetails />} />
 
-        <Route path="/contact" element={<Contact />} />
+      <Route path="/about" element={<About />} />
 
-        <Route path="/chatbot" element={<ChatBot />} />
+      <Route path="/contact" element={<Contact />} />
 
-        <Route
-          path="/admin"
-          element={
-
-            <ProtectedRoute>
-              <AdminLayout>
-                <AdminDashboard />
-              </AdminLayout>
-            </ProtectedRoute>
+      <Route path="/chatbot" element={<ChatBot />} />
 
 
-          }
-        />
-
-        <Route
-          path="/admin/properties"
-          element={
-
-            <ProtectedRoute>
-              <AdminLayout>
-                <AdminProperties />
-              </AdminLayout>
-            </ProtectedRoute>
-
-          }
-        />
-
-        <Route
-          path="/admin/add-property"
-          element={
-
-            <ProtectedRoute>
-              <AdminLayout>
-                <AddProperty />
-              </AdminLayout>
-            </ProtectedRoute>
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute>
+            <AdminLayout>
+              <AdminDashboard />
+            </AdminLayout>
+          </ProtectedRoute>
+        }
+      />
 
 
-          }
-        />
-
-        <Route
-          path="/admin/properties/edit/:id"
-          element={
-
-            <ProtectedRoute>
-              <AdminLayout>
-                <EditProperty />
-              </AdminLayout>
-            </ProtectedRoute>
+      <Route
+        path="/admin/properties"
+        element={
+          <ProtectedRoute>
+            <AdminLayout>
+              <AdminProperties />
+            </AdminLayout>
+          </ProtectedRoute>
+        }
+      />
 
 
+      <Route
+        path="/admin/add-property"
+        element={
+          <ProtectedRoute>
+            <AdminLayout>
+              <AddProperty />
+            </AdminLayout>
+          </ProtectedRoute>
+        }
+      />
 
-          }
-        />
 
-        <Route
-          path="/admin/inquiries"
-          element={
+      <Route
+        path="/admin/properties/edit/:id"
+        element={
+          <ProtectedRoute>
+            <AdminLayout>
+              <EditProperty />
+            </AdminLayout>
+          </ProtectedRoute>
+        }
+      />
 
-            <ProtectedRoute>
-              <AdminLayout>
-                <AdminInquiries />
-              </AdminLayout>
-            </ProtectedRoute>
 
-          }
-        />
-        <Route path="/admin/login" element={<AdminLogin />} />
-      </Routes>
-    </BrowserRouter>
+      <Route
+        path="/admin/inquiries"
+        element={
+          <ProtectedRoute>
+            <AdminLayout>
+              <AdminInquiries />
+            </AdminLayout>
+          </ProtectedRoute>
+        }
+      />
+
+
+      <Route path="/admin/login" element={<AdminLogin />} />
+
+
+      <Route
+        path="/signup"
+        element={<Signup />}
+      />
+
+      <Route
+        path="/login"
+        element={<Login />}
+      />
+
+      <Route
+
+        path="/profile"
+
+        element={
+
+          <ProtectedRoute>
+
+            <Profile />
+
+          </ProtectedRoute>
+
+        }
+
+      />
+
+      <Route path="/favorites" element={<Favorites />} />
+
+
+    </Routes>
   );
 }
 

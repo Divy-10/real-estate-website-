@@ -58,8 +58,108 @@
     width: 100%;
 }
 
+.navbar-toggler-custom {
+    background: transparent;
+    border: none;
+    font-size: 28px;
+    color: var(--text-dark);
+    cursor: pointer;
+    padding: 4px 8px;
+    z-index: 100;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.navbar-toggler-custom:hover {
+    opacity: 0.7;
+}
+
+.nav-collapse-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-grow: 1;
+    margin-left: 40px;
+}
+
+@media (min-width: 992px) {
+    .nav-collapse-container {
+        display: flex !important;
+    }
+}
+
 @media (max-width: 991px) {
-    .nav-links-wrapper {
+    .nav-collapse-container {
         display: none;
+        flex-direction: column;
+        width: 100%;
+        position: absolute;
+        top: 70px;
+        left: 0;
+        background: #ffffff;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+        border-radius: 12px;
+        padding: 24px;
+        z-index: 99;
+        border: 1px solid rgba(226, 232, 240, 0.8);
+        gap: 20px;
+        align-items: stretch !important;
+        margin-left: 0;
+    }
+
+    .nav-collapse-container.show {
+        display: flex;
+        animation: slideDown 0.3s ease-out forwards;
+    }
+
+    .navbar-nav {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        width: 100%;
+        gap: 16px !important;
+    }
+
+    .nav-item {
+        width: 100%;
+    }
+
+    .nav-link-custom {
+        display: block;
+        padding: 8px 0;
+        width: 100%;
+    }
+
+    .nav-action-wrapper {
+        flex-direction: column;
+        align-items: stretch !important;
+        width: 100%;
+        gap: 12px !important;
+        border-top: 1px solid #f1f5f9;
+        padding-top: 20px;
+    }
+
+    .nav-action-wrapper a, .nav-action-wrapper button {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+    
+    .welcome-text {
+        text-align: center;
+        margin-bottom: 4px;
+        font-weight: 600;
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }

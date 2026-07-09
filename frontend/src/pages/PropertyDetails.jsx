@@ -3,12 +3,15 @@ import { useParams, Link } from "react-router-dom";
 import API from "../services/api";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import EMICalculator from "../components/EMICalculator";
+import { getBackendUrl } from "../utils/config";
 
 function PropertyDetails() {
     const { id } = useParams();
     const [property, setProperty] = useState(null);
     const [activeTab, setActiveTab] = useState("overview");
     const [selectedUnit, setSelectedUnit] = useState(null);
+    const [showEMI, setShowEMI] = useState(false);
 
 
     const fetchProperty = async () => {
@@ -106,12 +109,12 @@ function PropertyDetails() {
 
                             <div
                                 className="rounded-4 overflow-hidden shadow-sm"
-                                style={{ height: "480px" }}
+                                style={{ height: "clamp(280px, 50vw, 480px)" }}
                             >
                                 <img
                                     src={
                                         property.image
-                                            ? `http://localhost:5009${property.image}`
+                                            ? getBackendUrl(property.image)
                                             : "https://via.placeholder.com/600x450"
                                     }
                                     alt={property.title}
@@ -201,23 +204,47 @@ function PropertyDetails() {
                         </div>
 
                         <div className="mb-4">
-                            <div className="row text-center g-3">
-                                <h5 className="fw-bold mb-2">Description</h5>
-                                <p className="text-muted" style={{ lineHeight: "1.6" }}>
-                                    {property.description || "This luxury home is equipped with premium finishings, architectural state-of-the-art construction, beautiful lighting systems, and sits in a very prime and highly secure location."}
-                                </p>
 
-                                <button
-                                    className={`btn ${activeTab === "map"
-                                        ? "btn-dark"
-                                        : "btn-outline-dark"
-                                        }`}
-                                    onClick={() => setActiveTab("map")}
-                                >
-                                    <i className="bi bi-map me-2"></i>
-                                    Property Map
-                                </button>
-                            </div>
+                            <h5 className="fw-bold mb-2">
+                                Description
+                            </h5>
+
+                            <p
+                                className="text-muted"
+                                style={{ lineHeight: "1.7" }}
+                            >
+                                {property.description ||
+                                    "This luxury home is equipped with premium finishings, architectural state-of-the-art construction and located in a prime area."}
+                            </p>
+
+                        </div>
+
+
+                        <div className="mb-4">
+
+                            <button
+                                className="btn btn-dark w-100"
+                                onClick={() => setShowEMI(true)}
+                            >
+                                <i className="bi bi-calculator me-2"></i>
+                                Calculate EMI
+                            </button>
+
+                        </div>
+
+                        <div className="mb-4">
+
+                            <button
+                                className={`btn w-100 ${activeTab === "map"
+                                    ? "btn-dark"
+                                    : "btn-outline-dark"
+                                    }`}
+                                onClick={() => setActiveTab("map")}
+                            >
+                                <i className="bi bi-map me-2"></i>
+
+                                View Property Map
+                            </button>
 
                         </div>
 
@@ -240,6 +267,61 @@ function PropertyDetails() {
                     </div>
                 </div>
             </div >
+
+
+            {/* ================= EMI Calculator Modal ================= */}
+
+            {showEMI && (
+
+                <div
+                    className="modal fade show"
+                    style={{
+                        display: "block",
+                        background: "rgba(0,0,0,.6)"
+                    }}
+                >
+
+                    <div className="modal-dialog modal-lg modal-dialog-centered">
+
+                        <div
+                            className="modal-content border-0"
+                            style={{
+                                borderRadius: "20px",
+                                overflow: "hidden"
+                            }}
+                        >
+
+                            <div className="modal-header">
+
+                                <h4 className="modal-title fw-bold">
+
+                                    Mortgage Calculator
+
+                                </h4>
+
+                                <button
+                                    className="btn-close"
+                                    onClick={() => setShowEMI(false)}
+                                ></button>
+
+                            </div>
+
+                            <div className="modal-body">
+
+                                <EMICalculator
+                                    propertyTitle={property.title}
+                                    propertyPrice={property.price}
+                                />
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            )}
 
             <Footer />
         </>
