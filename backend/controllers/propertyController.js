@@ -62,9 +62,13 @@ const createProperty = async (req, res) => {
 // UPDATE
 const updateProperty = async (req, res) => {
     try {
-        const imagePath = req.file
-            ? req.file.path
+        const imagePath = req.files?.image
+            ? req.files.image[0].path
             : req.body.image;
+
+        const propertyMapPath = req.files?.propertyMap
+            ? req.files.propertyMap[0].path
+            : req.body.propertyMap;
 
         let units = [];
         if (req.body.units) {
@@ -83,6 +87,7 @@ const updateProperty = async (req, res) => {
                 ...req.body,
                 units,
                 image: imagePath,
+                propertyMap: propertyMapPath,
             },
             {
                 new: true,

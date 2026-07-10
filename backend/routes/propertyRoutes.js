@@ -26,7 +26,14 @@ router.post(
     createProperty
 );
 
-router.put("/:id", upload.single("image"), updateProperty);
+router.put(
+    "/:id",
+    upload.fields([
+        { name: "image", maxCount: 1 },
+        { name: "propertyMap", maxCount: 1 }
+    ]),
+    updateProperty
+);
 
 
 
