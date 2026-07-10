@@ -12,7 +12,7 @@ const ChatWindow = ({ messages, isTyping }) => {
     return (
         <div className="chat-window">
             {messages.map((msg, index) => (
-                <div key={index}>
+                <div key={index} className="message-wrapper">
                     <MessageBubble message={msg} />
 
                     {msg.properties && msg.properties.length > 0 && (

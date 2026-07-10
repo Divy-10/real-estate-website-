@@ -214,6 +214,12 @@
     gap: 16px;
 }
 
+.message-wrapper {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
 .chat-window::-webkit-scrollbar {
     width: 6px;
 }
@@ -230,11 +236,13 @@
     gap: 10px;
     margin-bottom: 8px;
     max-width: 85%;
+    width: fit-content;
 }
 
 .user-container {
     margin-left: auto;
     flex-direction: row;
+    justify-content: flex-end;
 }
 
 .bot-container {
