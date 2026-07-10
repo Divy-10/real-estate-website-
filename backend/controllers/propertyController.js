@@ -31,7 +31,7 @@ const getPropertyById = async (req, res) => {
 const createProperty = async (req, res) => {
     try {
         const imagePath = req.files?.image
-            ? req.files.image[0].path
+            ? `/uploads/${req.files.image[0].filename}`
             : "";
 
         const units = req.body.units
@@ -55,7 +55,7 @@ const createProperty = async (req, res) => {
 const updateProperty = async (req, res) => {
     try {
         const imagePath = req.file
-            ? req.file.path
+            ? `/uploads/${req.file.filename}`
             : req.body.image;
 
         const units = req.body.units

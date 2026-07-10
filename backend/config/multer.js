@@ -1,21 +1,17 @@
 const multer = require("multer");
-const cloudinary = require("cloudinary").v2;
-const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const path = require("path");
 
-// Configure Cloudinary
-cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-});
-
-// Configure Cloudinary Storage for Multer
-const storage = new CloudinaryStorage({
-    cloudinary: cloudinary,
-    params: {
-        folder: "real-estate-properties",
-        allowed_formats: ["jpg", "jpeg", "png", "webp", "gif"],
+/* Storage setup */
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, "uploads/");
     },
+    filename: (req, file, cb) => {
+        const uniqueName =
+            Date.now() + "-" + Math.round(Math.random() * 1E9);
+
+        cb(null, uniqueName + path.extname(file.originalname));
+    }
 });
 
 /* File filter (only images) */
