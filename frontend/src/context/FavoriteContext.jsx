@@ -4,18 +4,21 @@ import {
     removeFavorite,
     getFavorites
 } from "../services/userService";
+import { useAuth } from "./AuthContext";
 
 const FavoriteContext = createContext();
 
 export const FavoriteProvider = ({ children }) => {
-
+    const { user } = useAuth();
     const [favorites, setFavorites] = useState([]);
 
     useEffect(() => {
-
-        loadFavorites();
-
-    }, []);
+        if (user) {
+            loadFavorites();
+        } else {
+            setFavorites([]);
+        }
+    }, [user]);
 
     const loadFavorites = async () => {
 

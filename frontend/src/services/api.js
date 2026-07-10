@@ -3,6 +3,9 @@ import { getBackendUrl } from "../utils/config";
 
 const API = axios.create({
     baseURL: getBackendUrl("/api"),
+    headers: {
+        "bypass-tunnel-reminder": "true"
+    }
 });
 
 API.interceptors.request.use((config) => {

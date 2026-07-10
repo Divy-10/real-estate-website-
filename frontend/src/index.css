@@ -18,11 +18,15 @@
   box-sizing: border-box;
 }
 
+html, body, #root {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 body {
   font-family: var(--font-main);
   background-color: #ffffff;
   color: var(--text-dark);
-  overflow-x: hidden;
 }
 
 a {
