@@ -3,7 +3,16 @@
 export const getBackendUrl = (path = "") => {
   // If a production API URL is set in environment variables, use it
   if (import.meta.env.VITE_API_URL) {
-    return `${import.meta.env.VITE_API_URL}${path}`;
+    let baseUrl = import.meta.env.VITE_API_URL;
+    // Strip trailing slash if present
+    if (baseUrl.endsWith("/")) {
+      baseUrl = baseUrl.slice(0, -1);
+    }
+    // If it's an upload/static asset, and baseUrl ends with "/api", strip it
+    if (path.startsWith("/uploads") && baseUrl.endsWith("/api")) {
+      baseUrl = baseUrl.slice(0, -4);
+    }
+    return `${baseUrl}${path}`;
   }
 
   if (typeof window !== "undefined") {
