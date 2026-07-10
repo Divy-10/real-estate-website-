@@ -12,6 +12,7 @@ const seedProperties = [
         bathrooms: 4,
         area: 1600,
         image: "https://images.unsplash.com/photo-1580587771525-78b9dba3b914",
+        category: "Villa",
         description: "This spectacular modern villa is located in the most exclusive, secure and prestigious neighborhood of Banana Island. Features state-of-the-art designs, a private pool, and panoramic water views."
     },
     {
@@ -22,6 +23,7 @@ const seedProperties = [
         bathrooms: 5,
         area: 2200,
         image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9",
+        category: "Villa",
         description: "A masterful architectural showcase in Parkview Estate. Offering soaring ceilings, high-end materials, automated systems, and luxurious living spaces designed for hosting."
     },
     {
@@ -32,6 +34,7 @@ const seedProperties = [
         bathrooms: 3,
         area: 1800,
         image: "https://images.unsplash.com/photo-1512917774080-9991f1c4c750",
+        category: "Apartment",
         description: "Superb high-rise luxurious apartment overlooking the ocean in the prestigious city of Eko Atlantic. Fully furnished with elite designer furniture, high security and private elevator access."
     }
 ];
