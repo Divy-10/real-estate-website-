@@ -34,9 +34,16 @@ const createProperty = async (req, res) => {
             ? req.files.image[0].path
             : "";
 
-        const units = req.body.units
-            ? JSON.parse(req.body.units)
-            : [];
+        let units = [];
+        if (req.body.units) {
+            try {
+                units = typeof req.body.units === "string"
+                    ? JSON.parse(req.body.units)
+                    : req.body.units;
+            } catch (err) {
+                console.error("Units parse error in create:", err);
+            }
+        }
 
         const property = await Property.create({
             ...req.body,
@@ -47,6 +54,7 @@ const createProperty = async (req, res) => {
         res.status(201).json(property);
 
     } catch (error) {
+        console.error("Error creating property:", error);
         res.status(500).json({ message: error.message });
     }
 };
@@ -58,9 +66,16 @@ const updateProperty = async (req, res) => {
             ? req.file.path
             : req.body.image;
 
-        const units = req.body.units
-            ? JSON.parse(req.body.units)
-            : [];
+        let units = [];
+        if (req.body.units) {
+            try {
+                units = typeof req.body.units === "string"
+                    ? JSON.parse(req.body.units)
+                    : req.body.units;
+            } catch (err) {
+                console.error("Units parse error in update:", err);
+            }
+        }
 
         const property = await Property.findByIdAndUpdate(
             req.params.id,
@@ -78,6 +93,7 @@ const updateProperty = async (req, res) => {
         res.json(property);
 
     } catch (error) {
+        console.error("Error updating property:", error);
         res.status(500).json({ message: error.message });
     }
 };

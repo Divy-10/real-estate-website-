@@ -14,6 +14,7 @@ function EditProperty() {
         title: "",
         price: "",
         location: "",
+        category: "",
         type: "",
         bedrooms: "",
         bathrooms: "",
@@ -77,14 +78,13 @@ function EditProperty() {
             data.append("bathrooms", formData.bathrooms);
             data.append("area", formData.area);
             data.append("description", formData.description);
-            data.append("image", formData.image);
-            data.append("propertyMap", formData.propertyMap);
-            data.append("units", JSON.stringify(units));
-
-
             if (formData.image instanceof File) {
                 data.append("image", formData.image);
+            } else if (typeof formData.image === "string") {
+                data.append("image", formData.image);
             }
+            data.append("propertyMap", formData.propertyMap);
+            data.append("units", JSON.stringify(units));
 
             await API.put(`/properties/${id}`, data, {
                 headers: {
@@ -155,6 +155,7 @@ function EditProperty() {
                 <input
                     type="text"
                     name="category"
+                    value={formData.category || ""}
                     placeholder="Category (Villa, Apartment, Farm House, Office, Plot)"
                     className="form-control mb-3"
                     onChange={handleChange}
