@@ -41,9 +41,13 @@ function PropertyDetails() {
         );
     }
 
-    const formattedPrice = typeof property.price === 'number'
-        ? `₹${property.price.toLocaleString('en-IN')}`
+    const displayPrice = selectedUnit && typeof selectedUnit.price === 'number'
+        ? selectedUnit.price
         : property.price;
+
+    const formattedPrice = typeof displayPrice === 'number'
+        ? `₹${displayPrice.toLocaleString('en-IN')}`
+        : displayPrice;
 
 
     const handleWhatsApp = () => {
@@ -310,7 +314,7 @@ function PropertyDetails() {
 
                                 <EMICalculator
                                     propertyTitle={property.title}
-                                    propertyPrice={property.price}
+                                    propertyPrice={displayPrice}
                                 />
 
                             </div>
