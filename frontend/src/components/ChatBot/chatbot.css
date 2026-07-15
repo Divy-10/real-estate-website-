@@ -168,10 +168,11 @@
 }
 
 .chat-header-title {
-    font-family: 'Outfit', sans-serif;
+    letter-spacing: .5px;
+    font-family: Outfit, sans-serif;
     font-size: 16px;
     font-weight: 600;
-    letter-spacing: 0.5px;
+    color: aqua;
 }
 
 .status-wrapper {
@@ -198,9 +199,20 @@
 }
 
 @keyframes pulseStatus {
-    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
-    70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
-    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    0% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+    }
+
+    70% {
+        transform: scale(1);
+        box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+    }
+
+    100% {
+        transform: scale(0.95);
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+    }
 }
 
 /* Chat Window */
@@ -250,7 +262,8 @@
 }
 
 /* Avatars */
-.bot-avatar, .user-avatar {
+.bot-avatar,
+.user-avatar {
     width: 32px;
     height: 32px;
     border-radius: 50%;
@@ -320,9 +333,20 @@
 }
 
 @keyframes typingBlink {
-    0% { opacity: 0.2; transform: scale(0.8); }
-    20% { opacity: 1; transform: scale(1.1); }
-    100% { opacity: 0.2; transform: scale(0.8); }
+    0% {
+        opacity: 0.2;
+        transform: scale(0.8);
+    }
+
+    20% {
+        opacity: 1;
+        transform: scale(1.1);
+    }
+
+    100% {
+        opacity: 0.2;
+        transform: scale(0.8);
+    }
 }
 
 /* Chat Input Styling */
@@ -509,19 +533,19 @@
     .chatbot-main-title {
         font-size: 30px;
     }
-    
+
     .chat-container {
         height: 520px;
     }
-    
+
     .chat-window {
         padding: 16px;
     }
-    
+
     .chat-property-card-luxury {
         flex-direction: column;
     }
-    
+
     .chat-property-img-wrapper {
         width: 100%;
         height: 140px;
