@@ -6,6 +6,7 @@ import ChatInput from "./ChatInput";
 import { sendMessage } from "../../services/chatApi";
 import Navbar from "../Navbar";
 import Footer from "../Footer";
+import SEO from "../SEO";
 
 const SUGGESTED_PROMPTS = [
     "Properties in Surat under ₹ 1 Cr",
@@ -48,8 +49,22 @@ const ChatBot = () => {
         }
     };
 
+    const jsonLd = {
+        "@context": "https://schema.org",
+        "@type": "ConversationAgent",
+        "name": "Royal Crest Curator",
+        "description": "AI assistant helping users find their dream properties."
+    };
+
     return (
         <div className="chatbot-page-wrapper">
+            <SEO
+                title="AI Property Curator"
+                description="Describe your dream home, budget, and location, and let our Royal Crest AI Curator instantly find your perfect match."
+                keywords="AI real estate assistant, property finder chatbot, smart home curator"
+                publisher="Royal Crest Properties"
+                jsonLd={jsonLd}
+            />
             <Navbar />
             
             <div className="chatbot-hero-section">

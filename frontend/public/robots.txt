@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Exclude administrative paths
+Disallow: /admin/
+Disallow: /profile
+Disallow: /favorites
+
+Sitemap: https://royalcrestproperties.com/sitemap.xml
