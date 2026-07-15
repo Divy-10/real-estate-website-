@@ -30,6 +30,7 @@ import Career from "./pages/Career";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsConditions from "./pages/TermsConditions";
 import NotFound from "./pages/NotFound";
+import AdminAI from "./pages/AdminAI";
 
 // Utility widgets
 import ScrollToTop from "./components/ScrollToTop";
@@ -107,6 +108,17 @@ function App() {
             <ProtectedRoute>
               <AdminLayout>
                 <AdminInquiries />
+              </AdminLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/admin/ai-assistant"
+          element = {
+            <ProtectedRoute>
+              <AdminLayout>
+                <AdminAI />
               </AdminLayout>
             </ProtectedRoute>
           }
