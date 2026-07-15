@@ -38,6 +38,7 @@ function Navbar() {
         { path: "/blog", label: "Blog" },
         { path: "/gallery", label: "Gallery" },
         { path: "/chatbot", label: "AI Chat" },
+        { path: "/favorites", label: "Favorites", icon: "bi-heart-fill text-danger" },
         { path: "/contact", label: "Contact" },
     ];
 
@@ -96,7 +97,9 @@ function Navbar() {
                                     <Link
                                         className={`nav-link-custom ${isActive(link.path) ? "active" : ""}`}
                                         to={link.path}
+                                        style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}
                                     >
+                                        {link.icon && <i className={`bi ${link.icon}`}></i>}
                                         {link.label}
                                     </Link>
                                 </li>
