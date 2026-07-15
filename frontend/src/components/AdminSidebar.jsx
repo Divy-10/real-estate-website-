@@ -41,12 +41,6 @@ function AdminSidebar() {
                     </Link>
                 </li>
 
-                <li className="nav-item mb-2">
-                    <Link className="nav-link text-white font-weight-bold" to="/admin/ai-assistant">
-                        ✨ AI Assistant
-                    </Link>
-                </li>
-
                 <hr />
 
                 <li className="nav-item">
