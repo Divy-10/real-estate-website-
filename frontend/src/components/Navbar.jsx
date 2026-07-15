@@ -121,10 +121,14 @@ function Navbar() {
                                 </button>
                             </>
                         ) : (
-                            <Link to="/properties" className="btn-luxury-dark py-2 px-4 text-decoration-none" style={{ fontSize: "13px" }}>
-                                <i className="bi bi-search me-1"></i>
-                                Find A Home
-                            </Link>
+                            <>
+                                <Link to="/login" className="btn-luxury-outline py-2 px-3 text-decoration-none" style={{ fontSize: "13px" }}>
+                                    Login
+                                </Link>
+                                <Link to="/signup" className="btn-luxury-dark py-2 px-3 text-decoration-none" style={{ fontSize: "13px" }}>
+                                    Signup
+                                </Link>
+                            </>
                         )}
                     </div>
                 </div>
