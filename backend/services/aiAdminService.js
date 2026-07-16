@@ -67,8 +67,55 @@ const generateChat = async (systemContext, history, userMessage) => {
     } catch (err) {
         console.warn("[aiAdminService] generateChat hit rate limits or error. Returning high-quality local fallback reply.", err.message);
         
-        // Conversational local responses matching common prompts
         const msg = userMessage.toLowerCase();
+        
+        // Local Fallback for SEO Content Generation
+        if (systemContext.includes("SEO content") || msg.includes("seo")) {
+            const title = userMessage.match(/Property:\s*([^,]+)/)?.[1] || "Premium Property";
+            const category = userMessage.match(/Category:\s*([^,]+)/)?.[1] || "Real Estate";
+            const location = userMessage.match(/Location:\s*([^,]+)/)?.[1] || "India";
+            const price = userMessage.match(/₹\s*(\d+)/)?.[1] || "Contact Agent";
+            const bedrooms = userMessage.match(/(\d+)\s*BHK/)?.[1] || "";
+            const area = userMessage.match(/(\d+)\s*sqft/)?.[1] || "";
+            
+            const formattedPrice = isNaN(price) ? price : `₹${Number(price).toLocaleString("en-IN")}`;
+            const bhrStr = bedrooms ? `${bedrooms} BHK ` : "";
+            
+            return `✨ **SEO Content for ${title}** (Local Fallback Mode)
+
+* **Title Tag**: Premium ${bhrStr}${category} for Sale in ${location} | ${title}
+* **Meta Description**: Discover your dream home at ${title}, ${location}. A spacious ${area ? `${area} sqft ` : ""}${category} offering premium amenities, modern interiors, and a prime location. Contact us for details!
+* **Keywords**: ${title.toLowerCase()}, ${category.toLowerCase()} ${location.toLowerCase()}, luxury property ${location.toLowerCase()}, buy ${category.toLowerCase()} in ${location.toLowerCase()}
+* **URL Slug**: \`/properties/${title.toLowerCase().replace(/[^a-z0-9]+/g, "-")}-${location.toLowerCase().replace(/[^a-z0-9]+/g, "-")}\``;
+        }
+
+        // Local Fallback for Social Media Marketing Caption
+        if (systemContext.includes("social media posts") || msg.includes("social") || msg.includes("instagram") || msg.includes("caption")) {
+            const title = userMessage.match(/Property:\s*([^,]+)/)?.[1] || "Premium Property";
+            const category = userMessage.match(/Category:\s*([^,]+)/)?.[1] || "Real Estate";
+            const location = userMessage.match(/Location:\s*([^,]+)/)?.[1] || "India";
+            const price = userMessage.match(/₹\s*(\d+)/)?.[1] || "Contact Agent";
+            const bedrooms = userMessage.match(/(\d+)\s*BHK/)?.[1] || "";
+            const area = userMessage.match(/(\d+)\s*sqft/)?.[1] || "";
+            
+            const formattedPrice = isNaN(price) ? price : `₹${Number(price).toLocaleString("en-IN")}`;
+            const bhrStr = bedrooms ? `${bedrooms} BHK ` : "";
+
+            return `📸 **Social Media Marketing Post for ${title}** (Local Fallback Mode)
+
+🏡 **Luxurious ${bhrStr}${category} Available at ${title}, ${location}!** ✨
+
+Looking for the perfect blend of modern comfort and elegant design? This stunning ${area ? `${area} sqft ` : ""}${category} is now available.
+
+🌟 **Key Features:**
+📍 Prime location in ${location}
+🛋️ Spacious design with high-end fixtures
+${area ? `📐 Size: ${area} sqft\n` : ""}${price ? `💰 Price: ${formattedPrice}\n` : ""}
+📩 Send us a direct message (DM) or click the link in our bio for more details and to schedule a private tour! 
+
+#RealEstateIndia #${location.replace(/\s+/g, "")}Properties #LuxuryLiving #DreamHome #PropertyForSale #${title.replace(/\s+/g, "")} #IndianRealEstate`;
+        }
+
         if (msg.includes("hello") || msg.includes("hi") || msg.includes("hey")) {
             return "Hello! I am your AI Admin Assistant. I'm currently running on a rate-limit safe local fallback. How can I help you manage listings, inquiries, or stats today?";
         }
@@ -596,12 +643,24 @@ Respond with ONLY a valid JSON object (no markdown code blocks, no extra charact
                 conversationService.addMessage(sessionId, "user", message);
 
                 let propertyContext = "";
+                let prop = null;
+                let isLatestFallback = false;
+
                 if (entities.title || entities.propertyId) {
                     const query = entities.propertyId ? { _id: entities.propertyId } : { title: new RegExp(entities.title, "i") };
-                    const prop = await Property.findOne(query);
+                    prop = await Property.findOne(query);
+                }
+
+                if (!prop) {
+                    // Fallback to the latest property in the database so the button actually does something!
+                    prop = await Property.findOne().sort({ createdAt: -1 });
                     if (prop) {
-                        propertyContext = `Property: ${prop.title}, ${prop.category}, ${prop.location}, ₹${prop.price}, ${prop.bedrooms} BHK, ${prop.area} sqft. ${prop.description}`;
+                        isLatestFallback = true;
                     }
+                }
+
+                if (prop) {
+                    propertyContext = `Property: ${prop.title}, ${prop.category}, ${prop.location}, ₹${prop.price}, ${prop.bedrooms} BHK, ${prop.area} sqft. ${prop.description || ""}`;
                 }
 
                 const contentType = intent === "GENERATE_SEO" ? "SEO content"
@@ -610,7 +669,17 @@ Respond with ONLY a valid JSON object (no markdown code blocks, no extra charact
 
                 const systemContext = `You are a Real Estate Marketing Expert. Generate professional ${contentType} for a real estate property in India. Be specific, engaging, and SEO-optimized. Use INR (₹) currency.`;
 
-                reply = await generateChat(systemContext, history, propertyContext ? `${message}\n\nProperty Details: ${propertyContext}` : message);
+                const promptMessage = propertyContext 
+                    ? `${message}\n\nProperty Details: ${propertyContext}` 
+                    : message;
+
+                reply = await generateChat(systemContext, history, promptMessage);
+
+                // Add a small helpful prefix if we fell back to the latest property
+                if (isLatestFallback && prop) {
+                    reply = `💡 *(Generating content for your latest property: **${prop.title}**)*\n\n${reply}`;
+                }
+
                 conversationService.addMessage(sessionId, "model", reply);
                 return { reply, intent, data: null };
             }
