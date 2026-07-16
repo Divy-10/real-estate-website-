@@ -50,7 +50,7 @@ ${INTENT_LIST}
 Rules:
 1. Always respond with ONLY a valid JSON object — no markdown, no explanation.
 2. Extract as many entities as possible from the message.
-3. Common entity keys: title, price, location, category, bedrooms, bathrooms, area, description, status, propertyId, userId, inquiryId.
+3. Common entity keys: title, price, location, category, bedrooms, bathrooms, area, description, status, propertyId, userId, inquiryId, unitCount.
 4. If the message is part of a multi-turn conversation (e.g. admin is answering "Palm Residency" after being asked "What is the title?"), set intent to "COLLECT_DATA" and put the value in entities.collectedValue.
 5. Price can be in formats like "2.5 crore", "50 lakh", "25 lakhs" — keep as string in entities.priceRaw.
 6. Category examples: Villa, Apartment, Plot, Commercial, Flat, Bungalow, Shop.
@@ -63,6 +63,17 @@ Response format (strict JSON):
   "confidence": 0.95
 }
 `.trim();
+
+const parsePrice = (raw) => {
+    if (!raw) return null;
+    if (typeof raw === "number") return raw;
+    const str = String(raw).toLowerCase().replace(/,/g, "");
+    const num = parseFloat(str);
+    if (str.includes("crore") || str.includes("cr")) return Math.round(num * 10000000);
+    if (str.includes("lakh") || str.includes("lac")) return Math.round(num * 100000);
+    if (str.includes("k")) return Math.round(num * 1000);
+    return Math.round(num) || null;
+};
 
 /**
  * Detect intent from admin's message.
@@ -85,13 +96,54 @@ const detectIntent = async (message, history = []) => {
                 entities: idMatch ? { propertyId: idMatch[1] } : (titleMatch ? { title: titleMatch[1].trim() } : {})
             };
         }
-        // Create Property
-        if (lowerMsg.includes("create") || lowerMsg.includes("add property") || lowerMsg.includes("new property") || lowerMsg.includes("add villa")) {
-            const titleMatch = message.match(/(?:villa|property|apartment|flat|plot| bungalow|shop) in (.+)/i);
-            const loc = titleMatch ? titleMatch[1].trim() : undefined;
+        // Create Property (Flexible paragraph analyzer for direct input)
+        if (lowerMsg.includes("create") || lowerMsg.includes("add property") || lowerMsg.includes("new property") || lowerMsg.includes("add villa") || 
+            (lowerMsg.includes("bedroom") && lowerMsg.includes("bathroom") && (lowerMsg.includes("sqft") || lowerMsg.includes("price")))) {
+            
+            const entities = {};
+            const categories = ["villa", "apartment", "flat", "plot", "bungalow", "commercial", "shop"];
+            const foundCat = categories.find(cat => lowerMsg.includes(cat));
+            if (foundCat) entities.category = foundCat;
+
+            // Title / Name extraction
+            const titleMatch = message.match(/(?:name|title)\s*:\s*(.+?)(?=\s*(?:and\s+)?(?:location|price|unit|sqft|bedroom|bathroom|:|,|$))/i);
+            if (titleMatch) {
+                entities.title = titleMatch[1].trim();
+            } else {
+                const locMatch = message.match(/(?:villa|property|apartment|flat|plot|bungalow|shop) in ([a-zA-Z\s]+)/i);
+                if (locMatch) entities.title = `Premium ${foundCat || "Property"} in ${locMatch[1].trim()}`;
+            }
+
+            // Location extraction
+            const locMatch = message.match(/location\s*:\s*([a-zA-Z\s]+)/i) || message.match(/in\s+([a-zA-Z\s]+)(?:,|\s|$)/i);
+            if (locMatch) entities.location = locMatch[1].trim();
+
+            // Price extraction
+            const priceMatch = message.match(/price\s*(?::)?\s*([\d\.]+\s*(?:crore|cr|lakh|lac|k|million|thousand)?)/i);
+            if (priceMatch) {
+                entities.priceRaw = priceMatch[1].trim();
+                entities.price = parsePrice(entities.priceRaw);
+            }
+
+            // Bedrooms extraction
+            const bedMatch = message.match(/(\d+)\s*(?:bedroom|bhk)/i);
+            if (bedMatch) entities.bedrooms = parseInt(bedMatch[1]);
+
+            // Bathrooms extraction
+            const bathMatch = message.match(/(\d+)\s*(?:bathroom|bath)/i);
+            if (bathMatch) entities.bathrooms = parseInt(bathMatch[1]);
+
+            // Area extraction
+            const areaMatch = message.match(/(\d+)\s*(?:sqft|sq\.ft|square feet)/i);
+            if (areaMatch) entities.area = parseInt(areaMatch[1]);
+
+            // Unit count extraction
+            const unitMatch = message.match(/(\d+)\s*(?:unit|room)/i);
+            if (unitMatch) entities.unitCount = parseInt(unitMatch[1]);
+
             return {
                 intent: "CREATE_PROPERTY",
-                entities: loc ? { location: loc } : {}
+                entities
             };
         }
         // Dashboard Stats

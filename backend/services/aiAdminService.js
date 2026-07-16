@@ -292,13 +292,34 @@ Respond with ONLY a valid JSON object (no markdown code blocks, no extra charact
 
             // Skip Project Map upload: ask about units next
             if (pendingIntent === "CREATE_PROPERTY") {
-                reply = `✅ **Cover Image Uploaded Successfully!**\n\n` +
-                    `💡 **AI Generated Description (based on details):**\n> "${aiDescription || details.aiDescription}"\n\n` +
-                    `🏗️ **Does this project contain units?** (e.g. A101, A102...)\n\n` +
-                    `Reply with:\n- **Yes** → I'll help you create unit numbers\n- **No** → We'll skip units`;
+                const current = conversationService.getPendingProperty(sessionId);
+                if (current.unitCount && !current.units?.length) {
+                    const count = current.unitCount;
+                    const units = [];
+                    const prefix = "A";
+                    for (let i = 1; i <= count; i++) {
+                        const num = String(i).padStart(3, "0");
+                        units.push({ unitNumber: `${prefix}${num}`, status: "available" });
+                    }
+                    conversationService.updatePendingProperty(sessionId, { units, _unitCount: count, _unitsAsked: true });
 
-                // Set pending intent to UNITS_FLOW
-                conversationService.setPendingIntent(sessionId, "UNITS_FLOW");
+                    reply = `✅ **Cover Image Uploaded Successfully!**\n\n` +
+                        `💡 **AI Generated Description (based on details):**\n> "${aiDescription || details.aiDescription}"\n\n` +
+                        `✅ **${count} units auto-generated!**\n\n` +
+                        `Here is your **Property Summary** — please review before we create it! 👇`;
+                    
+                    conversationService.addMessage(sessionId, "model", reply);
+                    const summaryResult = await showPropertySummary(sessionId);
+                    return { reply: reply + "\n\n" + summaryResult.reply, intent: "ANALYZE_IMAGE", data: { imagePath } };
+                } else {
+                    reply = `✅ **Cover Image Uploaded Successfully!**\n\n` +
+                        `💡 **AI Generated Description (based on details):**\n> "${aiDescription || details.aiDescription}"\n\n` +
+                        `🏗️ **Does this project contain units?** (e.g. A101, A102...)\n\n` +
+                        `Reply with:\n- **Yes** → I'll help you create unit numbers\n- **No** → We'll skip units`;
+
+                    // Set pending intent to UNITS_FLOW
+                    conversationService.setPendingIntent(sessionId, "UNITS_FLOW");
+                }
             } else {
                 reply = `✅ **Image Uploaded Successfully!**\n\n💡 **AI Generated Description:**\n> "${aiDescription || details.aiDescription}"`;
             }
@@ -792,9 +813,25 @@ const handleCreatePropertyFlow = async (message, sessionId, pendingData, history
         if (!current.image) {
             reply = `✅ All details collected!\n\n📸 Please **upload the Cover Image** for this property.\n\n*(Drag & drop or click the 📎 icon below)*`;
         } else {
-            // No map requested. Show units next.
-            reply = `🏗️ **Does this project contain units?** (e.g. A101, A102...)\n\nReply with:\n- **Yes**\n- **No**`;
-            conversationService.setPendingIntent(sessionId, "UNITS_FLOW");
+            // Check if units were already specified in initial text
+            if (current.unitCount && !current.units?.length) {
+                const count = current.unitCount;
+                const units = [];
+                const prefix = "A";
+                for (let i = 1; i <= count; i++) {
+                    const num = String(i).padStart(3, "0");
+                    units.push({ unitNumber: `${prefix}${num}`, status: "available" });
+                }
+                conversationService.updatePendingProperty(sessionId, { units, _unitCount: count, _unitsAsked: true });
+                reply = `✅ **${count} units generated successfully!**\n\nHere is your **Property Summary** — please review before we create it! 👇`;
+                conversationService.addMessage(sessionId, "model", reply);
+                const summaryResult = await showPropertySummary(sessionId);
+                return { reply: reply + "\n\n" + summaryResult.reply, intent: "CREATE_PROPERTY", data: null };
+            } else {
+                // No map requested. Show units next.
+                reply = `🏗️ **Does this project contain units?** (e.g. A101, A102...)\n\nReply with:\n- **Yes**\n- **No**`;
+                conversationService.setPendingIntent(sessionId, "UNITS_FLOW");
+            }
         }
     }
 
