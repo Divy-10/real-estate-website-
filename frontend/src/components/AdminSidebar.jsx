@@ -41,6 +41,24 @@ function AdminSidebar() {
                     </Link>
                 </li>
 
+                {/* AI Assistant — new menu item */}
+                <li className="nav-item mb-2">
+                    <Link
+                        className="nav-link text-white d-flex align-items-center gap-2"
+                        to="/admin/ai-assistant"
+                        style={{
+                            background: "linear-gradient(135deg, rgba(59,130,246,0.15), rgba(139,92,246,0.15))",
+                            borderRadius: "8px",
+                            border: "1px solid rgba(59,130,246,0.25)",
+                            padding: "8px 12px",
+                            marginTop: "4px",
+                        }}
+                    >
+                        <span>⭐</span>
+                        <span>AI Assistant</span>
+                    </Link>
+                </li>
+
                 <hr />
 
                 <li className="nav-item">

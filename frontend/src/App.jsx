@@ -10,6 +10,7 @@ import AdminProperties from "./pages/AdminProperties";
 import AddProperty from "./pages/AddProperty";
 import EditProperty from "./pages/EditProperty";
 import AdminInquiries from "./pages/AdminInquiries";
+import AdminAI from "./pages/AdminAI"; // AI Admin Assistant
 import AdminLayout from "./layout/AdminLayout";
 import AdminLogin from "./pages/AdminLogin";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -107,6 +108,18 @@ function App() {
             <ProtectedRoute>
               <AdminLayout>
                 <AdminInquiries />
+              </AdminLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* AI Admin Assistant — admin only */}
+        <Route
+          path="/admin/ai-assistant"
+          element = {
+            <ProtectedRoute>
+              <AdminLayout>
+                <AdminAI />
               </AdminLayout>
             </ProtectedRoute>
           }

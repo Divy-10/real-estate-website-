@@ -15,6 +15,7 @@ const authRoutes = require("./routes/authRoutes");
 const chatRoutes = require("./routes/chatRoutes");
 const userAuthRoutes = require("./routes/userAuthRoutes");
 const userRoutes = require("./routes/userRoutes");
+const aiAdminRoutes = require("./routes/aiAdminRoutes"); // AI Admin Assistant
 
 const app = express();
 
@@ -40,6 +41,7 @@ app.use("/api/inquiries", inquiryRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/chat", chatRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/admin", aiAdminRoutes); // AI Admin Assistant
 
 
 
