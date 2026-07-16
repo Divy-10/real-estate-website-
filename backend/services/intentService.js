@@ -100,50 +100,9 @@ const detectIntent = async (message, history = []) => {
         if (lowerMsg.includes("create") || lowerMsg.includes("add property") || lowerMsg.includes("new property") || lowerMsg.includes("add villa") || 
             (lowerMsg.includes("bedroom") && lowerMsg.includes("bathroom") && (lowerMsg.includes("sqft") || lowerMsg.includes("price")))) {
             
-            const entities = {};
-            const categories = ["villa", "apartment", "flat", "plot", "bungalow", "commercial", "shop"];
-            const foundCat = categories.find(cat => lowerMsg.includes(cat));
-            if (foundCat) entities.category = foundCat;
-
-            // Title / Name extraction
-            const titleMatch = message.match(/(?:name|title)\s*:\s*(.+?)(?=\s*(?:and\s+)?(?:location|price|unit|sqft|bedroom|bathroom|:|,|$))/i);
-            if (titleMatch) {
-                entities.title = titleMatch[1].trim();
-            } else {
-                const locMatch = message.match(/(?:villa|property|apartment|flat|plot|bungalow|shop) in ([a-zA-Z\s]+)/i);
-                if (locMatch) entities.title = `Premium ${foundCat || "Property"} in ${locMatch[1].trim()}`;
-            }
-
-            // Location extraction
-            const locMatch = message.match(/location\s*:\s*([a-zA-Z\s]+)/i) || message.match(/in\s+([a-zA-Z\s]+)(?:,|\s|$)/i);
-            if (locMatch) entities.location = locMatch[1].trim();
-
-            // Price extraction
-            const priceMatch = message.match(/price\s*(?::)?\s*([\d\.]+\s*(?:crore|cr|lakh|lac|k|million|thousand)?)/i);
-            if (priceMatch) {
-                entities.priceRaw = priceMatch[1].trim();
-                entities.price = parsePrice(entities.priceRaw);
-            }
-
-            // Bedrooms extraction
-            const bedMatch = message.match(/(\d+)\s*(?:bedroom|bhk)/i);
-            if (bedMatch) entities.bedrooms = parseInt(bedMatch[1]);
-
-            // Bathrooms extraction
-            const bathMatch = message.match(/(\d+)\s*(?:bathroom|bath)/i);
-            if (bathMatch) entities.bathrooms = parseInt(bathMatch[1]);
-
-            // Area extraction
-            const areaMatch = message.match(/(\d+)\s*(?:sqft|sq\.ft|square feet)/i);
-            if (areaMatch) entities.area = parseInt(areaMatch[1]);
-
-            // Unit count extraction
-            const unitMatch = message.match(/(\d+)\s*(?:unit|room)/i);
-            if (unitMatch) entities.unitCount = parseInt(unitMatch[1]);
-
             return {
                 intent: "CREATE_PROPERTY",
-                entities
+                entities: getLocalEntities(message)
             };
         }
         // Dashboard Stats
@@ -249,4 +208,56 @@ const detectIntent = async (message, history = []) => {
     }
 };
 
-module.exports = { detectIntent };
+/**
+ * Robust regex helper to extract entities directly from text.
+ * Used for both local fallback and as a safety merge for online LLM mode.
+ */
+const getLocalEntities = (message) => {
+    const lowerMsg = message.toLowerCase().trim();
+    const entities = {};
+    
+    // Extract Category
+    const categories = ["villa", "apartment", "flat", "plot", "bungalow", "commercial", "shop"];
+    const foundCat = categories.find(cat => lowerMsg.includes(cat));
+    if (foundCat) entities.category = foundCat;
+
+    // Extract Title
+    const titleMatch = message.match(/(?:name|title)\s*:\s*(.+?)(?=\s*(?:and\s+)?(?:location|price|unit|sqft|bedroom|bathroom|:|,|$))/i);
+    if (titleMatch) {
+        entities.title = titleMatch[1].trim();
+    } else {
+        const locMatch = message.match(/(?:villa|property|apartment|flat|plot|bungalow|shop) in ([a-zA-Z\s]+)/i);
+        if (locMatch) entities.title = `Premium ${foundCat || "Property"} in ${locMatch[1].trim()}`;
+    }
+
+    // Extract Location
+    const locMatch = message.match(/location\s*:\s*([a-zA-Z\s]+)/i) || message.match(/in\s+([a-zA-Z\s]+)(?:,|\s|$)/i);
+    if (locMatch) entities.location = locMatch[1].trim();
+
+    // Extract Price
+    const priceMatch = message.match(/price\s*(?::)?\s*([\d\.]+\s*(?:crore|cr|lakh|lac|k|million|thousand)?)/i);
+    if (priceMatch) {
+        entities.priceRaw = priceMatch[1].trim();
+        entities.price = parsePrice(entities.priceRaw);
+    }
+
+    // Extract Bedrooms (Tolerates typos like 6v, 6bhk)
+    const bedMatch = message.match(/(\d+)\s*(?:[a-zA-Z]\s*)?(?:bedroom|bhk|bed)/i);
+    if (bedMatch) entities.bedrooms = parseInt(bedMatch[1]);
+
+    // Extract Bathrooms (Tolerates typos like 6v, 6b, 6bath)
+    const bathMatch = message.match(/(\d+)\s*(?:[a-zA-Z]\s*)?(?:bathroom|bath)/i);
+    if (bathMatch) entities.bathrooms = parseInt(bathMatch[1]);
+
+    // Extract Area
+    const areaMatch = message.match(/(\d+)\s*(?:sqft|sq\.ft|square feet)/i);
+    if (areaMatch) entities.area = parseInt(areaMatch[1]);
+
+    // Extract Unit Count
+    const unitMatch = message.match(/(\d+)\s*(?:unit|room)/i);
+    if (unitMatch) entities.unitCount = parseInt(unitMatch[1]);
+
+    return entities;
+};
+
+module.exports = { detectIntent, getLocalEntities };

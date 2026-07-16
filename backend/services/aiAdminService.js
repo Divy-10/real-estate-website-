@@ -21,7 +21,7 @@ const User = require("../models/User");
 
 // New services
 const conversationService = require("./conversationService");
-const { detectIntent } = require("./intentService");
+const { detectIntent, getLocalEntities } = require("./intentService");
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
@@ -357,7 +357,15 @@ Respond with ONLY a valid JSON object (no markdown code blocks, no extra charact
         // ── DETECT INTENT ─────────────────────────────────────────────────────
         const detected = await detectIntent(message, history);
         intent = detected.intent;
-        const entities = detected.entities;
+        
+        // Merge AI-detected entities with local regex extractions, preserving any local hits from being erased by AI undefined values
+        const localEntities = getLocalEntities(message);
+        const entities = { ...localEntities };
+        for (const [key, value] of Object.entries(detected.entities || {})) {
+            if (value !== undefined && value !== null && value !== "") {
+                entities[key] = value;
+            }
+        }
 
         // ── MULTI-TURN: We are in the middle of a flow ────────────────────────
         if (pendingIntent === "CREATE_PROPERTY") {
