@@ -44,6 +44,30 @@ const parsePrice = (raw) => {
 };
 
 /**
+ * Automatically fill in missing property details with reasonable defaults
+ * to prevent the system from asking the user step-by-step questions.
+ */
+const fillMissingFieldsWithDefaults = (data) => {
+    const defaults = {
+        category: "Apartment",
+        location: "Surat, Gujarat",
+        bedrooms: 3,
+        bathrooms: 3,
+        area: 1500,
+        price: 10000000,
+        priceRaw: "1 Crore",
+    };
+
+    const filled = { ...defaults, ...data };
+    
+    if (!filled.title) {
+        filled.title = `Premium ${filled.category} in ${filled.location}`;
+    }
+
+    return filled;
+};
+
+/**
  * Generate a conversational reply using Gemini with full history context.
  */
 const generateChat = async (systemContext, history, userMessage) => {
@@ -351,16 +375,13 @@ Respond with ONLY a valid JSON object (no markdown code blocks, no extra charact
             // ── CREATE PROPERTY ──────────────────────────────────────────────
             case "CREATE_PROPERTY": {
                 conversationService.setPendingIntent(sessionId, "CREATE_PROPERTY");
-                conversationService.updatePendingProperty(sessionId, entities);
+                
+                // Automatically fill missing details with defaults so user is only asked for the image
+                const filledEntities = fillMissingFieldsWithDefaults(entities);
+                conversationService.updatePendingProperty(sessionId, filledEntities);
                 conversationService.addMessage(sessionId, "user", message);
 
-                const missing = getNextMissingField(entities);
-                if (missing) {
-                    reply = `🏠 **Let's create a new property!**\n\nI'll collect all the details one by one.\n\n${getFieldQuestion(missing)}`;
-                } else {
-                    // All fields collected in one message — ask for image
-                    reply = `✅ Got all the basic details!\n\n📸 Please **upload the Cover Image** for this property.\n\n*(Drag & drop or click the 📎 icon)*`;
-                }
+                reply = `✅ Got all the details!\n\n📸 Please **upload the Cover Image** for this property.\n\n*(Drag & drop or click the 📎 icon below)*`;
 
                 conversationService.addMessage(sessionId, "model", reply);
                 return { reply, intent, data: null };
