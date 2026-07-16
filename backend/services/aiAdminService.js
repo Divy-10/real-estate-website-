@@ -70,7 +70,7 @@ const generateChat = async (systemContext, history, userMessage) => {
         const msg = userMessage.toLowerCase();
         
         // Local Fallback for SEO Content Generation
-        if (systemContext.includes("SEO content") || msg.includes("seo")) {
+        if (systemContext.includes("Generate professional SEO content") || msg.includes("seo")) {
             const title = userMessage.match(/Property:\s*([^,]+)/)?.[1] || "Premium Property";
             const category = userMessage.match(/Category:\s*([^,]+)/)?.[1] || "Real Estate";
             const location = userMessage.match(/Location:\s*([^,]+)/)?.[1] || "India";
@@ -90,7 +90,7 @@ const generateChat = async (systemContext, history, userMessage) => {
         }
 
         // Local Fallback for Social Media Marketing Caption
-        if (systemContext.includes("social media posts") || msg.includes("social") || msg.includes("instagram") || msg.includes("caption")) {
+        if (systemContext.includes("Generate professional social media posts") || msg.includes("social") || msg.includes("instagram") || msg.includes("caption")) {
             const title = userMessage.match(/Property:\s*([^,]+)/)?.[1] || "Premium Property";
             const category = userMessage.match(/Category:\s*([^,]+)/)?.[1] || "Real Estate";
             const location = userMessage.match(/Location:\s*([^,]+)/)?.[1] || "India";

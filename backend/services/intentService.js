@@ -119,9 +119,18 @@ const detectIntent = async (message, history = []) => {
         if (lowerMsg.includes("user") || lowerMsg.includes("member") || lowerMsg.includes("custom")) {
             return { intent: "GET_USERS", entities: {} };
         }
-        // Get Properties
-        if (lowerMsg.includes("show properties") || lowerMsg.includes("list property") || lowerMsg.includes("get properties") || lowerMsg.includes("show all properties") || lowerMsg.includes("all properties")) {
-            return { intent: "GET_PROPERTIES", entities: {} };
+        // Get Properties (e.g. "show properties", "available properties", "list properties")
+        if (lowerMsg.includes("propert") || lowerMsg.includes("villa") || lowerMsg.includes("apartment") || lowerMsg.includes("flat") || lowerMsg.includes("bungalow") || lowerMsg.includes("shop")) {
+            if (lowerMsg.includes("show") || lowerMsg.includes("list") || lowerMsg.includes("get") || lowerMsg.includes("find") || lowerMsg.includes("view") || lowerMsg.includes("all") || lowerMsg.includes("avail") || lowerMsg.includes("book") || lowerMsg.includes("sold")) {
+                let status = undefined;
+                if (lowerMsg.includes("avail")) status = "available";
+                if (lowerMsg.includes("book")) status = "booked";
+                if (lowerMsg.includes("sold")) status = "sold";
+                return { 
+                    intent: "GET_PROPERTIES", 
+                    entities: status ? { status } : {} 
+                };
+            }
         }
         // Generate SEO, Description, or Social Posts
         if (lowerMsg.includes("seo") || lowerMsg.includes("meta")) {
