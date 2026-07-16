@@ -109,15 +109,13 @@
 
 /* ── QUICK ACTIONS ──────────────────────────────────────────────── */
 .quick-actions-bar {
-  padding: 14px 24px;
+  padding: 14px 0 6px 0;
   background: #ffffff;
   border-bottom: 1px solid var(--chat-border);
   flex-shrink: 0;
-  overflow-x: auto;
-  scrollbar-width: none;
+  display: flex;
+  flex-direction: column;
 }
-
-.quick-actions-bar::-webkit-scrollbar { display: none; }
 
 .quick-actions-label {
   font-size: 11px;
@@ -126,12 +124,35 @@
   letter-spacing: 0.08em;
   font-weight: 700;
   margin-bottom: 8px;
+  padding: 0 24px;
 }
 
 .quick-actions-list {
   display: flex;
   gap: 8px;
   flex-wrap: nowrap;
+  overflow-x: auto;
+  padding: 4px 24px 8px 24px;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+.quick-actions-list::-webkit-scrollbar {
+  height: 5px;
+}
+
+.quick-actions-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.quick-actions-list::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 10px;
+}
+
+.quick-actions-list::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8;
 }
 
 .quick-action-chip {
@@ -714,7 +735,9 @@
 /* ── RESPONSIVE ─────────────────────────────────────────────────── */
 @media (max-width: 768px) {
   .ai-chat-header { padding: 12px 16px; }
-  .quick-actions-bar { padding: 10px 16px; }
+  .quick-actions-bar { padding: 10px 0 4px 0; }
+  .quick-actions-label { padding: 0 16px; }
+  .quick-actions-list { padding: 4px 16px 8px 16px; }
   .chat-window { padding: 16px; gap: 14px; }
   .chat-input-area { padding: 12px 16px; }
   .msg-content { max-width: 88%; }
