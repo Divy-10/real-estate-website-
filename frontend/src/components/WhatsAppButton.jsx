@@ -133,6 +133,8 @@ function WhatsAppButton() {
       onMouseDown={handleMouseDown}
       onTouchStart={handleTouchStart}
       onClick={handleClick}
+      onDragStart={(e) => e.preventDefault()}
+      draggable="false"
       style={{
         position: "fixed",
         top: `${position.y}px`,
