@@ -880,9 +880,10 @@ const handleUnitsFlow = async (message, sessionId, pendingData, history) => {
     const lowerMsg = message.toLowerCase().trim();
     const current = conversationService.getPendingProperty(sessionId);
 
+    // 1. If we haven't asked yes/no yet, expect yes or no
     if (!current._unitsAsked) {
         if (lowerMsg === "no" || lowerMsg.includes("no")) {
-            conversationService.updatePendingProperty(sessionId, { _unitsAsked: true });
+            conversationService.updatePendingProperty(sessionId, { _unitsAsked: true, _unitCount: 0, units: [] });
             conversationService.setPendingIntent(sessionId, "CREATE_PROPERTY");
             const reply = `✅ No units will be created.\n\nHere's your **Property Summary** — please review before we create it! 👇`;
             conversationService.addMessage(sessionId, "model", reply);
@@ -898,11 +899,22 @@ const handleUnitsFlow = async (message, sessionId, pendingData, history) => {
             conversationService.addMessage(sessionId, "model", reply);
             return { reply, intent: "UNITS_FLOW", data: null };
         }
-    } else if (!current._unitCount) {
-        // Admin gave the number of units
+    }
+
+    // 2. If yes was answered but units are not yet generated, expect a number
+    if (!current.units || current.units.length === 0) {
+        // If they changed their mind and type "no" here, support skipping
+        if (lowerMsg === "no" || lowerMsg.includes("no")) {
+            conversationService.updatePendingProperty(sessionId, { _unitCount: 0, units: [] });
+            conversationService.setPendingIntent(sessionId, "CREATE_PROPERTY");
+            const reply = `✅ No units will be created.\n\nHere's your **Property Summary** — please review before we create it! 👇`;
+            conversationService.addMessage(sessionId, "model", reply);
+            return await showPropertySummary(sessionId);
+        }
+
         const count = parseInt(message.trim());
         if (!count || count < 1 || count > 500) {
-            const reply = `Please enter a valid number of units (1-500).`;
+            const reply = `Please enter a valid number of units (1-500). Or type **No** to skip units.`;
             conversationService.addMessage(sessionId, "model", reply);
             return { reply, intent: "UNITS_FLOW", data: null };
         }
@@ -924,7 +936,8 @@ const handleUnitsFlow = async (message, sessionId, pendingData, history) => {
         return await showPropertySummary(sessionId);
     }
 
-    return { reply: "Please answer yes or no about units.", intent: "UNITS_FLOW", data: null };
+    // 3. Fallback: If units are already generated, show summary
+    return await showPropertySummary(sessionId);
 };
 
 /**
