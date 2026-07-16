@@ -72,7 +72,10 @@ const generateChat = async (systemContext, history, userMessage) => {
         if (msg.includes("hello") || msg.includes("hi") || msg.includes("hey")) {
             return "Hello! I am your AI Admin Assistant. I'm currently running on a rate-limit safe local fallback. How can I help you manage listings, inquiries, or stats today?";
         }
-        return "I received your command! I'm currently handling operations via local backup mode due to rate limits. I will execute your requests directly against the database models. What would you like me to do next?";
+        if (msg.includes("yes") || msg.includes("next") || msg.includes("done") || msg.includes("ok") || msg.includes("sure")) {
+            return "Understood! Please tell me which specific action you would like to run (e.g., *'Delete property Palm Residency'*, *'Create a new property'*, or *'Show dashboard statistics'*).";
+        }
+        return "I received your command! I'm currently running in a rate-limit safe local fallback mode. Please specify the exact instruction (e.g., *'Delete property [Title/ID]'*, *'Show stats'*, or *'Show inquiries'*). What should I do next?";
     }
 };
 

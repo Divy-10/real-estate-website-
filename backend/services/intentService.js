@@ -76,6 +76,15 @@ const detectIntent = async (message, history = []) => {
 
     // ── LOCAL REGEX FALLBACK DETECTOR (Prevents rate-limit quota exhaustion) ──
     const getLocalIntent = () => {
+        // Delete Property
+        if ((lowerMsg.includes("delete") || lowerMsg.includes("remove")) && (lowerMsg.includes("property") || lowerMsg.includes("villa") || lowerMsg.includes("listing"))) {
+            const idMatch = message.match(/([a-f\d]{24})/i);
+            const titleMatch = message.match(/(?:delete|remove)\s+(?:a\s+)?(?:property|villa|listing)\s+(.+)/i);
+            return {
+                intent: "DELETE_PROPERTY",
+                entities: idMatch ? { propertyId: idMatch[1] } : (titleMatch ? { title: titleMatch[1].trim() } : {})
+            };
+        }
         // Create Property
         if (lowerMsg.includes("create") || lowerMsg.includes("add property") || lowerMsg.includes("new property") || lowerMsg.includes("add villa")) {
             const titleMatch = message.match(/(?:villa|property|apartment|flat|plot| bungalow|shop) in (.+)/i);
@@ -94,6 +103,16 @@ const detectIntent = async (message, history = []) => {
             let status = undefined;
             if (lowerMsg.includes("pend")) status = "pending";
             if (lowerMsg.includes("complet") || lowerMsg.includes("close")) status = "closed";
+
+            // Check for delete inquiry
+            if (lowerMsg.includes("delete") || lowerMsg.includes("remove")) {
+                const idMatch = message.match(/([a-f\d]{24})/i);
+                return {
+                    intent: "DELETE_INQUIRY",
+                    entities: idMatch ? { inquiryId: idMatch[1] } : {}
+                };
+            }
+
             return { intent: "GET_INQUIRIES", entities: { status } };
         }
         // Users
@@ -101,7 +120,7 @@ const detectIntent = async (message, history = []) => {
             return { intent: "GET_USERS", entities: {} };
         }
         // Get Properties
-        if (lowerMsg.includes("show properties") || lowerMsg.includes("list property") || lowerMsg.includes("get properties") || lowerMsg.includes("show all properties")) {
+        if (lowerMsg.includes("show properties") || lowerMsg.includes("list property") || lowerMsg.includes("get properties") || lowerMsg.includes("show all properties") || lowerMsg.includes("all properties")) {
             return { intent: "GET_PROPERTIES", entities: {} };
         }
         // Generate SEO
