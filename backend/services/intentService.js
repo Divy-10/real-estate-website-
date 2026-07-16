@@ -123,9 +123,15 @@ const detectIntent = async (message, history = []) => {
         if (lowerMsg.includes("show properties") || lowerMsg.includes("list property") || lowerMsg.includes("get properties") || lowerMsg.includes("show all properties") || lowerMsg.includes("all properties")) {
             return { intent: "GET_PROPERTIES", entities: {} };
         }
-        // Generate SEO
+        // Generate SEO, Description, or Social Posts
         if (lowerMsg.includes("seo") || lowerMsg.includes("meta")) {
             return { intent: "GENERATE_SEO", entities: {} };
+        }
+        if (lowerMsg.includes("social") || lowerMsg.includes("instagram") || lowerMsg.includes("caption") || lowerMsg.includes("facebook") || lowerMsg.includes("post")) {
+            return { intent: "GENERATE_SOCIAL", entities: {} };
+        }
+        if (lowerMsg.includes("description") || lowerMsg.includes("describe")) {
+            return { intent: "GENERATE_DESCRIPTION", entities: {} };
         }
         return null;
     };

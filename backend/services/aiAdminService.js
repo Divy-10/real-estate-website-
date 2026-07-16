@@ -483,7 +483,11 @@ Respond with ONLY a valid JSON object (no markdown code blocks, no extra charact
                 conversationService.addMessage(sessionId, "user", message);
 
                 if (!entities.inquiryId) {
-                    reply = `Please provide the **Inquiry ID** to delete.\n\nExample: "Delete inquiry 6847abc"`;
+                    const inquiries = await Inquiry.find().limit(5).sort({ createdAt: -1 });
+                    const listStr = inquiries.length > 0
+                        ? "\n\n**Here are your recent inquiries:**\n" + inquiries.map(i => `• **${i.name}** (${i.email}) | ID: \`${i._id}\``).join("\n")
+                        : "";
+                    reply = `Please provide the **Inquiry ID** to delete.${listStr}\n\nExample: "Delete inquiry 6847abc"`;
                 } else {
                     await Inquiry.findByIdAndDelete(entities.inquiryId);
                     reply = `🗑️ Inquiry \`${entities.inquiryId}\` has been **deleted successfully**.`;
@@ -510,7 +514,11 @@ Respond with ONLY a valid JSON object (no markdown code blocks, no extra charact
                             reply = `❌ No property found with title "${entities.title}". Please provide the exact Property ID.`;
                         }
                     } else {
-                        reply = `Please provide the **Property ID** or **Title** to delete.\n\nExample: "Delete property Palm Residency"`;
+                        const properties = await Property.find().limit(5).sort({ createdAt: -1 });
+                        const listStr = properties.length > 0
+                            ? "\n\n**Here are your recent properties:**\n" + properties.map(p => `• **${p.title}** (${p.location}) | ID: \`${p._id}\``).join("\n")
+                            : "";
+                        reply = `Please provide the **Property ID** or **Title** to delete.${listStr}\n\nExample: "Delete property Palm Residency"`;
                     }
                 } else {
                     const deleted = await Property.findByIdAndDelete(entities.propertyId);
