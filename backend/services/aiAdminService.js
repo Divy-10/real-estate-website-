@@ -374,6 +374,9 @@ Respond with ONLY a valid JSON object (no markdown code blocks, no extra charact
 
             // ── CREATE PROPERTY ──────────────────────────────────────────────
             case "CREATE_PROPERTY": {
+                // Clear any leftover pending property data to avoid session contamination
+                conversationService.clearPendingProperty(sessionId);
+                
                 conversationService.setPendingIntent(sessionId, "CREATE_PROPERTY");
                 
                 // Automatically fill missing details with defaults so user is only asked for the image
@@ -870,17 +873,20 @@ const handleUnitsFlow = async (message, sessionId, pendingData, history) => {
     const current = conversationService.getPendingProperty(sessionId);
 
     if (!current._unitsAsked) {
-        // Admin answered yes/no to "does it have units?"
-        conversationService.updatePendingProperty(sessionId, { _unitsAsked: true });
-
         if (lowerMsg === "no" || lowerMsg.includes("no")) {
+            conversationService.updatePendingProperty(sessionId, { _unitsAsked: true });
             conversationService.setPendingIntent(sessionId, "CREATE_PROPERTY");
             const reply = `✅ No units will be created.\n\nHere's your **Property Summary** — please review before we create it! 👇`;
             conversationService.addMessage(sessionId, "model", reply);
             return await showPropertySummary(sessionId);
-        } else {
+        } else if (lowerMsg === "yes" || lowerMsg.includes("yes")) {
+            conversationService.updatePendingProperty(sessionId, { _unitsAsked: true });
             // Ask how many units
             const reply = `How many **total units** does this project have?\n\n*(e.g. 12, 24, 48)*`;
+            conversationService.addMessage(sessionId, "model", reply);
+            return { reply, intent: "UNITS_FLOW", data: null };
+        } else {
+            const reply = `Please answer **Yes** or **No** to: "Does this project contain units?"`;
             conversationService.addMessage(sessionId, "model", reply);
             return { reply, intent: "UNITS_FLOW", data: null };
         }
