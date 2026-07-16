@@ -883,9 +883,10 @@ const handleUnitsFlow = async (message, sessionId, pendingData, history) => {
     // 1. If we haven't asked yes/no yet, expect yes or no
     if (!current._unitsAsked) {
         if (lowerMsg === "no" || lowerMsg.includes("no")) {
-            conversationService.updatePendingProperty(sessionId, { _unitsAsked: true, _unitCount: 0, units: [] });
+            const units = [{ unitNumber: "A001", status: "available" }];
+            conversationService.updatePendingProperty(sessionId, { _unitsAsked: true, _unitCount: 1, units });
             conversationService.setPendingIntent(sessionId, "CREATE_PROPERTY");
-            const reply = `✅ No units will be created.\n\nHere's your **Property Summary** — please review before we create it! 👇`;
+            const reply = `✅ Default unit (A001) will be created automatically.\n\nHere's your **Property Summary** — please review before we create it! 👇`;
             conversationService.addMessage(sessionId, "model", reply);
             return await showPropertySummary(sessionId);
         } else if (lowerMsg === "yes" || lowerMsg.includes("yes")) {
@@ -905,9 +906,10 @@ const handleUnitsFlow = async (message, sessionId, pendingData, history) => {
     if (!current.units || current.units.length === 0) {
         // If they changed their mind and type "no" here, support skipping
         if (lowerMsg === "no" || lowerMsg.includes("no")) {
-            conversationService.updatePendingProperty(sessionId, { _unitCount: 0, units: [] });
+            const units = [{ unitNumber: "A001", status: "available" }];
+            conversationService.updatePendingProperty(sessionId, { _unitCount: 1, units });
             conversationService.setPendingIntent(sessionId, "CREATE_PROPERTY");
-            const reply = `✅ No units will be created.\n\nHere's your **Property Summary** — please review before we create it! 👇`;
+            const reply = `✅ Default unit (A001) will be created automatically.\n\nHere's your **Property Summary** — please review before we create it! 👇`;
             conversationService.addMessage(sessionId, "model", reply);
             return await showPropertySummary(sessionId);
         }
@@ -1019,7 +1021,7 @@ const confirmCreateProperty = async (sessionId) => {
             propertyMap: data.propertyMap || "",
             status: data.status || "available",
             agentWhatsapp: data.agentWhatsapp || "",
-            units: data.units || [],
+            units: data.units && data.units.length > 0 ? data.units : [{ unitNumber: "A001", status: "available" }],
         });
 
         // Clear the session data
