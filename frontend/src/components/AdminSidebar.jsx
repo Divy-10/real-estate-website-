@@ -5,8 +5,9 @@ function AdminSidebar() {
     const navigate = useNavigate();
 
     const handleLogout = () => {
-        localStorage.removeItem("adminToken");
-        alert("Logged out succesfully");
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        alert("Logged out successfully");
         navigate("/");
     };
 
