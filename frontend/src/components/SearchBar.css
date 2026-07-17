@@ -115,3 +115,13 @@
         padding: 14px 24px;
     }
 }
+
+/* Dark Mode Overrides */
+[data-theme="dark"] .btn-search-now {
+    color: #0a0a0a !important;
+}
+
+[data-theme="dark"] .btn-search-now:hover {
+    background-color: #cbd5e1;
+    color: #0a0a0a !important;
+}
