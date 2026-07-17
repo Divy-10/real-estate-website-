@@ -5,6 +5,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import EMICalculator from "../components/EMICalculator";
 import { getBackendUrl } from "../utils/config";
+import { useAuth } from "../context/AuthContext";
 
 function PropertyDetails() {
     const { id } = useParams();
@@ -13,6 +14,14 @@ function PropertyDetails() {
     const [selectedUnit, setSelectedUnit] = useState(null);
     const [showEMI, setShowEMI] = useState(false);
 
+    // Contact agent states
+    const { user } = useAuth();
+    const [showContactModal, setShowContactModal] = useState(false);
+    const [contactName, setContactName] = useState("");
+    const [contactEmail, setContactEmail] = useState("");
+    const [contactPhone, setContactPhone] = useState("");
+    const [contactMessage, setContactMessage] = useState("");
+    const [submittingInquiry, setSubmittingInquiry] = useState(false);
 
     const fetchProperty = async () => {
         try {
@@ -25,6 +34,22 @@ function PropertyDetails() {
     useEffect(() => {
         fetchProperty();
     }, [id]);
+
+    // Pre-fill contact details from logged-in user
+    useEffect(() => {
+        if (user) {
+            setContactName(user.name || "");
+            setContactEmail(user.email || "");
+            if (user.phone) setContactPhone(user.phone || "");
+        }
+    }, [user, showContactModal]);
+
+    // Auto-generate contact message when unit/property changes
+    useEffect(() => {
+        if (property && selectedUnit) {
+            setContactMessage(`Hello, I am interested in unit ${selectedUnit.unitNumber} of property "${property.title}". Please contact me.`);
+        }
+    }, [property, selectedUnit]);
 
     if (!property) {
         return (
@@ -51,27 +76,57 @@ function PropertyDetails() {
 
 
     const handleWhatsApp = () => {
-
         if (!selectedUnit) {
             alert(" Please select a unit from the map first");
             return;
         }
+        setShowContactModal(true);
+    };
 
-        const message = `
-            PROPERTY BOOKING REQUEST
+    const handleInquirySubmit = async (e) => {
+        e.preventDefault();
+        if (!contactName.trim() || !contactEmail.trim() || !contactPhone.trim() || !contactMessage.trim()) {
+            alert("Please fill all fields");
+            return;
+        }
 
-            Unit: ${selectedUnit.unitNumber}
-            Property: ${property.title}
-            Location: ${property.location}
-            Price: ${formattedPrice}
-            Link: ${window.location.origin}/property/${property._id}
+        setSubmittingInquiry(true);
+        try {
+            // Save to database
+            await API.post("/inquiries", {
+                name: contactName,
+                email: contactEmail,
+                phone: contactPhone,
+                message: contactMessage,
+                property: {
+                    property_id: property._id,
+                    title: property.title
+                }
+            });
 
-            Hello, I am interested in this unit. Please contact me.
-    `;
+            // Trigger WhatsApp redirect as before
+            const message = `
+PROPERTY BOOKING REQUEST
 
-        const url = `https://wa.me/918780301147?text=${encodeURIComponent(message)}`;
+Unit: ${selectedUnit.unitNumber}
+Property: ${property.title}
+Location: ${property.location}
+Price: ${formattedPrice}
+Link: ${window.location.origin}/property/${property._id}
 
-        window.open(url, "_blank");
+Hello, I am interested in this unit. My Name is ${contactName}, Phone: ${contactPhone}. Please contact me.
+            `;
+            const url = `https://wa.me/918780301147?text=${encodeURIComponent(message)}`;
+            window.open(url, "_blank");
+
+            setShowContactModal(false);
+            alert("Inquiry submitted successfully!");
+        } catch (error) {
+            console.error("Error submitting inquiry", error);
+            alert(error.response?.data?.message || "Failed to submit inquiry");
+        } finally {
+            setSubmittingInquiry(false);
+        }
     };
     return (
         <>
@@ -325,6 +380,83 @@ function PropertyDetails() {
 
                 </div>
 
+            )}
+
+            {/* ================= Contact Agent Modal ================= */}
+            {showContactModal && (
+                <div
+                    className="modal fade show"
+                    style={{
+                        display: "block",
+                        background: "rgba(0,0,0,.6)",
+                        zIndex: 1050
+                    }}
+                >
+                    <div className="modal-dialog modal-dialog-centered">
+                        <div className="modal-content p-3 rounded-4">
+                            <div className="modal-header border-0 pb-0">
+                                <h5 className="modal-title fw-bold">Contact Agent</h5>
+                                <button
+                                    type="button"
+                                    className="btn-close"
+                                    onClick={() => setShowContactModal(false)}
+                                    aria-label="Close"
+                                ></button>
+                            </div>
+                            <div className="modal-body">
+                                <form onSubmit={handleInquirySubmit}>
+                                    <div className="mb-3">
+                                        <label className="form-label text-muted small fw-bold">Name</label>
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            value={contactName}
+                                            onChange={(e) => setContactName(e.target.value)}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="mb-3">
+                                        <label className="form-label text-muted small fw-bold">Email</label>
+                                        <input
+                                            type="email"
+                                            className="form-control"
+                                            value={contactEmail}
+                                            onChange={(e) => setContactEmail(e.target.value)}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="mb-3">
+                                        <label className="form-label text-muted small fw-bold">Phone Number</label>
+                                        <input
+                                            type="tel"
+                                            className="form-control"
+                                            value={contactPhone}
+                                            onChange={(e) => setContactPhone(e.target.value)}
+                                            required
+                                        />
+                                    </div>
+                                    <div className="mb-3">
+                                        <label className="form-label text-muted small fw-bold">Message</label>
+                                        <textarea
+                                            className="form-control"
+                                            rows="3"
+                                            value={contactMessage}
+                                            onChange={(e) => setContactMessage(e.target.value)}
+                                            required
+                                        ></textarea>
+                                    </div>
+                                    <button
+                                        type="submit"
+                                        className="btn btn-dark w-100 py-2 rounded-3 fw-bold"
+                                        disabled={submittingInquiry}
+                                    >
+                                        {submittingInquiry ? "Submitting..." : "Submit Inquiry & Chat on WhatsApp"}
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             )}
 
             <Footer />
