@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 function WhatsAppButton() {
+  const location = useLocation();
   const phoneNumber = "919999999999";
   const message = encodeURIComponent("Hi! I'm interested in your real estate services. Can you help me find my dream property?");
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
@@ -14,6 +16,11 @@ function WhatsAppButton() {
   
   const isDragging = useRef(false);
   const offset = useRef({ x: 0, y: 0 });
+
+  // Hide on admin routes
+  if (location.pathname.startsWith("/admin")) {
+    return null;
+  }
 
   // Keep button within screen on resize
   useEffect(() => {

@@ -608,40 +608,50 @@
 
 /* ── CHAT INPUT BAR ─────────────────────────────────────────────── */
 .chat-input-area {
-  padding: 16px 24px;
+  padding: 16px 24px 8px 24px;
   background-color: #ffffff;
   border-top: 1px solid var(--chat-border);
   flex-shrink: 0;
   position: relative;
   z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .chat-input-wrapper {
   display: flex;
   align-items: center;
   gap: 12px;
+  width: 100%;
+  max-width: 1000px;
+  background-color: #f8fafc;
+  border: 1px solid var(--chat-border);
+  border-radius: 28px;
+  padding: 6px 12px 6px 20px;
+  transition: all 0.3s;
+}
+
+.chat-input-wrapper:focus-within {
+  border-color: var(--accent-gold);
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.12);
+  background-color: #ffffff;
 }
 
 .chat-textarea {
   flex: 1;
-  border: 1px solid var(--chat-border);
-  outline: none;
-  background: #f8fafc;
-  padding: 14px 20px;
-  border-radius: 30px;
+  border: none !important;
+  outline: none !important;
+  background: transparent !important;
+  padding: 8px 0;
   font-size: 14px;
   font-family: var(--font-main);
   resize: none;
   min-height: 22px;
   max-height: 120px;
   line-height: 1.5;
-  transition: all 0.3s ease;
-}
-
-.chat-textarea:focus {
-  border-color: var(--accent-gold);
-  background-color: #ffffff;
-  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+  color: var(--text-dark);
+  box-shadow: none !important;
 }
 
 .chat-input-actions {
@@ -651,8 +661,8 @@
 }
 
 .input-icon-btn {
-  width: 44px;
-  height: 44px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   border: 1px solid var(--chat-border);
   background-color: #ffffff;
@@ -662,7 +672,7 @@
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-size: 16px;
+  font-size: 15px;
 }
 
 .input-icon-btn:hover {
@@ -671,8 +681,8 @@
 }
 
 .send-btn {
-  width: 44px;
-  height: 44px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
   border: none;
   background-color: var(--btn-dark);
@@ -681,7 +691,7 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 15px;
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
 }
@@ -703,7 +713,7 @@
   text-align: center;
   font-size: 11px;
   color: var(--text-muted);
-  margin-top: 10px;
+  margin-top: 6px;
 }
 
 /* ── SCROLL TO BOTTOM BUTTON ────────────────────────────────────── */

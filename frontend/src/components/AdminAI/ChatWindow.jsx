@@ -39,7 +39,12 @@ function ChatWindow({ messages, loading, onAction, confirmLoading }) {
   }, [messages, loading]);
 
   const scrollToBottom = () => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    if (containerRef.current) {
+      containerRef.current.scrollTo({
+        top: containerRef.current.scrollHeight,
+        behavior: "smooth"
+      });
+    }
   };
 
   // Show scroll-to-bottom button when user scrolls up
