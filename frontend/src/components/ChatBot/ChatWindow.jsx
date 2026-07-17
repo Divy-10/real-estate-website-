@@ -3,14 +3,19 @@ import MessageBubble from "./MessageBubble";
 import PropertyResults from "./PropertyResults";
 
 const ChatWindow = ({ messages, isTyping }) => {
-    const bottomRef = useRef(null);
+    const containerRef = useRef(null);
 
     useEffect(() => {
-        bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+        if (containerRef.current) {
+            containerRef.current.scrollTo({
+                top: containerRef.current.scrollHeight,
+                behavior: "smooth"
+            });
+        }
     }, [messages, isTyping]);
 
     return (
-        <div className="chat-window">
+        <div className="chat-window" ref={containerRef}>
             {messages.map((msg, index) => (
                 <div key={index} className="message-wrapper">
                     <MessageBubble message={msg} />
@@ -26,8 +31,6 @@ const ChatWindow = ({ messages, isTyping }) => {
                     <MessageBubble message={{ type: "bot", text: "" }} isPending={true} />
                 </div>
             )}
-            
-            <div ref={bottomRef} />
         </div>
     );
 };

@@ -1,11 +1,10 @@
 import "./chatbot.css";
 import ChatHeader from "./ChatHeader";
-import { useState, useRef, useEffect } from "react";
+import { useState } from "react";
 import ChatWindow from "./ChatWindow";
 import ChatInput from "./ChatInput";
 import { sendMessage } from "../../services/chatApi";
 import Navbar from "../Navbar";
-import Footer from "../Footer";
 import SEO from "../SEO";
 
 const SUGGESTED_PROMPTS = [
@@ -23,6 +22,7 @@ const ChatBot = () => {
         }
     ]);
     const [isTyping, setIsTyping] = useState(false);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
     const handleSend = async (text) => {
         const userMsg = { type: "user", text };
@@ -67,77 +67,89 @@ const ChatBot = () => {
             />
             <Navbar />
             
-            <div className="chatbot-hero-section">
-                <div className="container">
-                    <div className="chatbot-hero-content text-center py-4">
-                        <span className="premium-badge">AI Assistant</span>
-                        <h1 className="chatbot-main-title">Royal Crest Curator</h1>
-                        <p className="chatbot-subtitle text-muted">
-                            Describe your ideal home, budget, and location, and let our artificial intelligence curate the best match.
-                        </p>
+            <div className="chatbot-app-container">
+                {/* Sidebar */}
+                <aside className={`chatbot-sidebar ${isSidebarOpen ? "active" : "collapsed"}`}>
+                    <div className="sidebar-header">
+                        <div className="sidebar-brand">
+                            <i className="bi bi-stars text-gold"></i>
+                            <span>Suggestions</span>
+                        </div>
+                        <button className="sidebar-close-btn d-lg-none" onClick={() => setIsSidebarOpen(false)}>
+                            <i className="bi bi-x-lg"></i>
+                        </button>
                     </div>
-                </div>
-            </div>
+                    <div className="sidebar-content">
+                        <p className="sidebar-desc text-muted">Click any prompt to instantly query the AI assistant:</p>
+                        <div className="suggestion-chips-container">
+                            {SUGGESTED_PROMPTS.map((prompt, idx) => (
+                                <button 
+                                    key={idx} 
+                                    className="suggestion-chip-btn"
+                                    onClick={() => handleSend(prompt)}
+                                    disabled={isTyping}
+                                >
+                                    <i className="bi bi-chat-left-text me-2"></i>
+                                    {prompt}
+                                </button>
+                            ))}
+                        </div>
+                        
+                        <div className="sidebar-divider" />
+                        
+                        <h5 className="sidebar-title">Tips</h5>
+                        <ul className="sidebar-tips-list text-muted">
+                            <li>Specify location (e.g. Bandra, Mumbai).</li>
+                            <li>Define budget constraints (e.g. under 1.5 Cr).</li>
+                            <li>Detail the size (e.g. 2 BHK, 3 Bed).</li>
+                        </ul>
+                    </div>
+                </aside>
 
-            <div className="container pb-5">
-                <div className="row g-4 justify-content-center">
-                    {/* Sidebar with Suggestions */}
-                    <div className="col-lg-3 d-none d-lg-block">
-                        <div className="sidebar-card-luxury">
-                            <h5 className="sidebar-title">Suggestions</h5>
-                            <p className="sidebar-desc text-muted">Click any prompt to instantly query the AI assistant:</p>
-                            <div className="suggestion-chips-container">
-                                {SUGGESTED_PROMPTS.map((prompt, idx) => (
-                                    <button 
-                                        key={idx} 
-                                        className="suggestion-chip-btn"
-                                        onClick={() => handleSend(prompt)}
-                                        disabled={isTyping}
-                                    >
-                                        <i className="bi bi-chat-left-text me-2"></i>
-                                        {prompt}
-                                    </button>
-                                ))}
+                {/* Main Chat Area */}
+                <main className="chatbot-main-content">
+                    <div className="chatbot-header-bar">
+                        <button className="sidebar-toggle-btn me-2" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+                            <i className="bi bi-layout-sidebar-inset"></i>
+                        </button>
+                        <ChatHeader />
+                    </div>
+
+                    <div className="chatbot-chat-area">
+                        {messages.length === 1 && (
+                            <div className="chat-welcome-screen">
+                                <div className="welcome-logo">
+                                    <i className="bi bi-robot text-gold"></i>
+                                </div>
+                                <h2>Royal Crest Curator</h2>
+                                <p>Describe your ideal home, budget, and location. Let's find your dream match.</p>
+                                
+                                <div className="welcome-prompts d-lg-none">
+                                    {SUGGESTED_PROMPTS.map((prompt, idx) => (
+                                        <button 
+                                            key={idx} 
+                                            className="suggestion-chip-btn text-center justify-content-center"
+                                            onClick={() => handleSend(prompt)}
+                                            disabled={isTyping}
+                                        >
+                                            {prompt}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
-                            
-                            <hr className="my-4" />
-                            
-                            <h5 className="sidebar-title">Tips</h5>
-                            <ul className="sidebar-tips-list text-muted">
-                                <li>Specify location (e.g. Bandra, Mumbai).</li>
-                                <li>Define budget constraints (e.g. under 1.5 Cr).</li>
-                                <li>Detail the size (e.g. 2 BHK, 3 Bed).</li>
-                            </ul>
-                        </div>
+                        )}
+                        
+                        <ChatWindow messages={messages} isTyping={isTyping} />
                     </div>
 
-                    {/* Chatbot Interface */}
-                    <div className="col-lg-8 col-md-12">
-                        <div className="chat-container">
-                            <ChatHeader />
-                            <ChatWindow messages={messages} isTyping={isTyping} />
-                            <ChatInput onSend={handleSend} isTyping={isTyping} />
-                        </div>
-                        {/* Mobile suggestion view */}
-                        <div className="d-block d-lg-none mt-3 px-2">
-                            <div className="d-flex flex-wrap gap-2 justify-content-center">
-                                {SUGGESTED_PROMPTS.map((prompt, idx) => (
-                                    <button 
-                                        key={idx} 
-                                        className="suggestion-chip-btn mobile-chip"
-                                        onClick={() => handleSend(prompt)}
-                                        disabled={isTyping}
-                                    >
-                                        {prompt}
-                                    </button>
-                                ))}
-                            </div>
+                    <div className="chatbot-input-container">
+                        <ChatInput onSend={handleSend} isTyping={isTyping} />
+                        <div className="chat-footer-disclaimer">
+                            Royal Crest AI Curator can make mistakes. Consider verifying important details.
                         </div>
                     </div>
-                </div>
+                </main>
             </div>
-
-            <Footer />
         </div>
     );
 };
