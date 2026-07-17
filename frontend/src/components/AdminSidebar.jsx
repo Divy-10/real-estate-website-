@@ -15,7 +15,7 @@ function AdminSidebar() {
         <div className="bg-dark text-white vh-100 p-3" style={{ width: "250px" }}>
 
             <h3 className="mb-4 d-flex align-items-center gap-2" style={{ fontFamily: "Outfit, sans-serif", fontWeight: 700, color: "#ffffff" }}>
-                <span style={{ color: "#c5a850" }}>👑</span>
+                <span style={{ color: "#c5a850" }}></span>
                 Admin Panel
             </h3>
 
