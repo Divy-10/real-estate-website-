@@ -644,3 +644,29 @@
         font-size: 24px;
     }
 }
+
+/* Clear Chat Button Styling */
+.chatbot-clear-btn {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    padding: 6px 14px;
+    color: #ffffff;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s;
+    font-family: 'Outfit', sans-serif;
+    font-weight: 500;
+}
+
+.chatbot-clear-btn:hover {
+    background-color: #dc3545;
+    border-color: #dc3545;
+    color: #ffffff;
+}
+
+.chatbot-clear-btn i {
+    font-size: 14px;
+}

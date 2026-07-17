@@ -28,22 +28,55 @@ import {
 const generateSessionId = () => `admin-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 
 function AIChat() {
-  const [messages, setMessages]       = useState([]);
+  const [messages, setMessages]       = useState(() => {
+    const saved = localStorage.getItem("admin_chat_messages");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (parsed && parsed.length > 0) return parsed;
+      } catch (e) {
+        console.error("Failed to parse admin chat messages", e);
+      }
+    }
+    return [];
+  });
+
   const [loading, setLoading]         = useState(false);
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [pendingImage, setPendingImage]     = useState(null); // staged File for cover
-  const sessionIdRef = useRef(generateSessionId());
+  const [pendingMap, setPendingMap]         = useState(null);
+
+  const sessionIdRef = useRef(null);
+  if (!sessionIdRef.current) {
+    const savedId = localStorage.getItem("admin_chat_session_id");
+    if (savedId) {
+      sessionIdRef.current = savedId;
+    } else {
+      const newId = generateSessionId();
+      localStorage.setItem("admin_chat_session_id", newId);
+      sessionIdRef.current = newId;
+    }
+  }
 
   const sessionId = sessionIdRef.current;
 
-  // ── Greet on first load ──────────────────────────────────────────
+  // Save messages to local storage whenever they change
   useEffect(() => {
-    const welcome = {
-      role: "model",
-      text: `👋 Welcome to your **AI Admin Assistant**!\n\nI can help you manage your entire real estate dashboard using natural language.\n\n**What I can do:**\n- 🏠 Create / Update / Delete properties\n- 📊 Show dashboard statistics\n- 📬 Manage inquiries\n- 👥 Manage users\n- 💡 Generate SEO content & descriptions\n- 📸 Analyze property images with AI\n\nJust type a command or pick one from the **Quick Actions** above!`,
-      timestamp: new Date(),
-    };
-    setMessages([welcome]);
+    if (messages.length > 0) {
+      localStorage.setItem("admin_chat_messages", JSON.stringify(messages));
+    }
+  }, [messages]);
+
+  // ── Greet on first load if history is empty ──────────────────────
+  useEffect(() => {
+    if (messages.length === 0) {
+      const welcome = {
+        role: "model",
+        text: `👋 Welcome to your **AI Admin Assistant**!\n\nI can help you manage your entire real estate dashboard using natural language.\n\n**What I can do:**\n- 🏠 Create / Update / Delete properties\n- 📊 Show dashboard statistics\n- 📬 Manage inquiries\n- 👥 Manage users\n- 💡 Generate SEO content & descriptions\n- 📸 Analyze property images with AI\n\nJust type a command or pick one from the **Quick Actions** above!`,
+        timestamp: new Date(),
+      };
+      setMessages([welcome]);
+    }
   }, []);
 
   // ── Add a message to the history ────────────────────────────────
@@ -158,7 +191,12 @@ function AIChat() {
     try {
       await clearSession(sessionId);
     } catch { /* ignore */ }
-    sessionIdRef.current = generateSessionId(); // new session
+    
+    const newId = generateSessionId();
+    localStorage.setItem("admin_chat_session_id", newId);
+    sessionIdRef.current = newId;
+    
+    localStorage.removeItem("admin_chat_messages");
     setMessages([]);
     setPendingImage(null);
     setPendingMap(null);

@@ -1,6 +1,6 @@
 import "./chatbot.css";
 import ChatHeader from "./ChatHeader";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import ChatWindow from "./ChatWindow";
 import ChatInput from "./ChatInput";
 import { sendMessage } from "../../services/chatApi";
@@ -15,14 +15,29 @@ const SUGGESTED_PROMPTS = [
 ];
 
 const ChatBot = () => {
-    const [messages, setMessages] = useState([
-        {
-            type: "bot",
-            text: "Hello! Welcome to Royal Crest Properties AI assistant. How can I help you find your dream home today?",
+    const [messages, setMessages] = useState(() => {
+        const saved = localStorage.getItem("client_chat_messages");
+        if (saved) {
+            try {
+                return JSON.parse(saved);
+            } catch (e) {
+                console.error("Failed to parse client chat messages", e);
+            }
         }
-    ]);
+        return [
+            {
+                type: "bot",
+                text: "Hello! Welcome to Royal Crest Properties AI assistant. How can I help you find your dream home today?",
+            }
+        ];
+    });
     const [isTyping, setIsTyping] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+    // Save messages to LocalStorage
+    useEffect(() => {
+        localStorage.setItem("client_chat_messages", JSON.stringify(messages));
+    }, [messages]);
 
     const handleSend = async (text) => {
         const userMsg = { type: "user", text };
@@ -47,6 +62,17 @@ const ChatBot = () => {
         } finally {
             setIsTyping(false);
         }
+    };
+
+    const handleClearChat = () => {
+        if (!window.confirm("Clear the entire chat history?")) return;
+        localStorage.removeItem("client_chat_messages");
+        setMessages([
+            {
+                type: "bot",
+                text: "Hello! Welcome to Royal Crest Properties AI assistant. How can I help you find your dream home today?",
+            }
+        ]);
     };
 
     const jsonLd = {
@@ -113,6 +139,15 @@ const ChatBot = () => {
                             <i className="bi bi-layout-sidebar-inset"></i>
                         </button>
                         <ChatHeader />
+                        
+                        <button 
+                            className="chatbot-clear-btn ms-auto"
+                            onClick={handleClearChat}
+                            title="Clear conversation"
+                        >
+                            <i className="bi bi-trash3 me-1"></i>
+                            <span>Clear Chat</span>
+                        </button>
                     </div>
 
                     <div className="chatbot-chat-area">
