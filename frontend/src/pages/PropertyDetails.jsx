@@ -195,32 +195,24 @@ Hello, I am interested in this unit. My Name is ${contactName}, Phone: ${contact
                                     gridTemplateColumns: "repeat(2, 1fr)",
                                     gap: "15px"
                                 }}>
-                                    {property.units?.map((unit, index) => (
-                                        <div
-                                            key={index}
-                                            onClick={() => {
-                                                if (unit.status === "booked") return;
-                                                setSelectedUnit(unit);
-                                            }}
-                                            style={{
-                                                padding: "20px",
-                                                borderRadius: "10px",
-                                                border: "2px solid #333",
-                                                cursor: unit.status === "booked" ? "not-allowed" : "pointer",
-                                                background:
-                                                    selectedUnit?.unitNumber === unit.unitNumber
-                                                        ? "#4caf50"
-                                                        : unit.status === "booked"
-                                                            ? "#ccc"
-                                                            : "#f5f5f5",
-                                                textAlign: "center"
-                                            }}
-                                        >
-                                            <h5>{unit.unitNumber}</h5>
-                                            <p>₹{unit.price}</p>
-                                            <small>{unit.status}</small>
-                                        </div>
-                                    ))}
+                                    {property.units?.map((unit, index) => {
+                                        const isSelected = selectedUnit?.unitNumber === unit.unitNumber;
+                                        const isBooked = unit.status === "booked";
+                                        return (
+                                            <div
+                                                key={index}
+                                                onClick={() => {
+                                                    if (isBooked) return;
+                                                    setSelectedUnit(unit);
+                                                }}
+                                                className={`unit-card ${isSelected ? "selected" : isBooked ? "booked" : "available"}`}
+                                            >
+                                                <h5>{unit.unitNumber}</h5>
+                                                <p className="mb-1">₹{unit.price}</p>
+                                                <small>{unit.status}</small>
+                                            </div>
+                                        );
+                                    })}
                                 </div>
 
 
