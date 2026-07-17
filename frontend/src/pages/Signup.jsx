@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { signupUser } from "../services/authService";
 import { useAuth } from "../context/AuthContext";
+import GoogleLoginButton from "../components/GoogleLoginButton";
 
 function Signup() {
 
@@ -144,6 +145,8 @@ function Signup() {
                             </form>
 
                             <hr className="my-4" />
+
+                            <GoogleLoginButton />
 
                             <p className="text-center mb-0">
 
