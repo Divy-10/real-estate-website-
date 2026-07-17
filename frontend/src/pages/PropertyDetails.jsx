@@ -316,13 +316,22 @@ Hello, I am interested in this unit. My Name is ${contactName}, Phone: ${contact
 
 
 
-                        <button
-                            onClick={handleWhatsApp}
-                            className="btn btn-success"
-                            disabled={!selectedUnit}
-                        >
-                            Contact Agent
-                        </button>
+                        {user ? (
+                            <button
+                                onClick={handleWhatsApp}
+                                className="btn btn-success w-100"
+                                disabled={!selectedUnit}
+                            >
+                                Contact Agent
+                            </button>
+                        ) : (
+                            <Link
+                                to="/login"
+                                className="btn btn-outline-dark w-100 text-center text-decoration-none"
+                            >
+                                Login to Contact Agent
+                            </Link>
+                        )}
                     </div>
                 </div>
             </div >
