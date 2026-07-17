@@ -188,6 +188,7 @@
     overflow: hidden;
     position: relative;
     height: 100%;
+    background-color: var(--chat-bg);
 }
 
 .chatbot-header-bar {
@@ -260,6 +261,7 @@
     position: relative;
     display: flex;
     flex-direction: column;
+    background-color: var(--chat-bg);
 }
 
 .chat-window {
@@ -270,6 +272,7 @@
     flex-direction: column;
     gap: 20px;
     scroll-behavior: smooth;
+    background-color: var(--chat-bg);
 }
 
 .chat-window::-webkit-scrollbar {
