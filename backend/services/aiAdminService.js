@@ -496,14 +496,21 @@ Respond with ONLY a valid JSON object (no markdown code blocks, no extra charact
                     label = "Completed";
                 }
 
-                const inquiries = await Inquiry.find(query).sort({ createdAt: -1 }).limit(20);
+                const inquiries = await Inquiry.find(query)
+                    .populate("property.property_id")
+                    .sort({ createdAt: -1 })
+                    .limit(20);
 
                 if (inquiries.length === 0) {
                     reply = `📭 No ${label.toLowerCase()} inquiries found.`;
                 } else {
-                    const list = inquiries.map((inq, i) =>
-                        `**${i + 1}. ${inq.name}** — ${inq.email}\n   📞 ${inq.phone}\n   🏠 ${inq.property?.title || "N/A"}\n   🔵 ${inq.status} | 🕐 ${new Date(inq.createdAt).toLocaleDateString("en-IN")}\n   🆔 \`${inq._id}\``
-                    ).join("\n\n");
+                    const list = inquiries.map((inq, i) => {
+                        const prop = inq.property?.property_id;
+                        const propDetail = prop 
+                            ? `**${prop.title}** (${prop.location} | ₹${typeof prop.price === 'number' ? prop.price.toLocaleString('en-IN') : prop.price})` 
+                            : `**${inq.property?.title || "N/A"}**`;
+                        return `**${i + 1}. ${inq.name}** — ${inq.email}\n   📞 Phone: ${inq.phone}\n   🏠 Property: ${propDetail}\n   💬 Message: "${inq.message}"\n   🔵 Status: ${inq.status} | 🕐 ${new Date(inq.createdAt).toLocaleDateString("en-IN")}\n   🆔 ID: \`${inq._id}\``;
+                    }).join("\n\n");
                     reply = `📬 **${label} Inquiries (${inquiries.length}):**\n\n${list}`;
                 }
 
